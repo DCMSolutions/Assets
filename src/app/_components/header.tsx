@@ -10,11 +10,8 @@ import {
   SelectValue,
 } from "~/components/ui/select";
 import { Languages } from "~/translations";
-import { SidebarTrigger, useSidebar } from "~/components/ui/sidebar";
-
 export default function Home({ lang }: { lang?: string }) {
   const t = useTranslations("HomePage");
-  const { toggleSidebar } = useSidebar();
 
   return (
     <div>
@@ -25,7 +22,7 @@ export default function Home({ lang }: { lang?: string }) {
         <header className="header-bar">
           <div className="branding">
             <div id="site-title" className="assistive-text">
-              Bagdrop
+              Assets
             </div>
             <div id="site-description" className="assistive-text">
               Una solución inteligente para el guardado de equipaje
@@ -71,9 +68,7 @@ export default function Home({ lang }: { lang?: string }) {
         </header>
         <div className="mobile-header-bar">
           <div className="mobile-navigation"></div>
-          <div className="mobile-mini-widgets">
-            
-          </div>
+          <div className="mobile-mini-widgets"></div>
           <div className="h-20 py-2">
             <Select
               defaultValue={lang}

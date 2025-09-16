@@ -1,7 +1,13 @@
 import { TRPCError } from "@trpc/server";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 import { serverUserPerms, trpcTienePermisoCtx } from "~/lib/roles";
-import { PERMISO_ADMIN, Permisos, PermisosValue, ROL_ADMIN_ID, tienePermiso } from "~/lib/permisos";
+import {
+  PERMISO_ADMIN,
+  Permisos,
+  PermisosValue,
+  ROL_ADMIN_ID,
+  tienePermiso,
+} from "~/lib/permisos";
 import { db, schema } from "~/server/db";
 import { and, eq, inArray, isNotNull } from "drizzle-orm";
 import { z } from "zod";
@@ -16,25 +22,26 @@ export const userRouter = createTRPCRouter({
       }),
     )
     .query(async ({ input, ctx }) => {
-      await trpcTienePermisoCtx(ctx, PERMISO_ADMIN);
-      const user = await clerkClient.users.getUser(input.userId);
-      const usuarioEntidades = await db.query.usuarioEntidad.findFirst({
-        where: eq(schema.usuarioEntidad.userId, user.id)
-      });
+      // await trpcTienePermisoCtx(ctx, PERMISO_ADMIN);
+      // const user = await clerkClient.users.getUser(input.userId);
+      // const usuarioEntidades = await db.query.usuarioEntidad.findFirst({
+      //   where: eq(schema.usuarioEntidad.userId, user.id)
+      // });
 
-      const usuarioRoles = await db.query.userRoles.findMany({
-        where: eq(schema.userRoles.userId, user.id),
-        with: {
-          rol: true
-        }
-      });
+      // const usuarioRoles = await db.query.userRoles.findMany({
+      //   where: eq(schema.userRoles.userId, user.id),
+      //   with: {
+      //     rol: true
+      //   }
+      // });
 
-      return {
-        ...user,
-        fullName: ((user.firstName ?? "") + " " + (user.lastName ?? "")).trim(),
-        usuarioEntidades: usuarioEntidades ? [usuarioEntidades] : [],
-        usuarioRoles,
-      };
+      // return {
+      //   ...user,
+      //   fullName: ((user.firstName ?? "") + " " + (user.lastName ?? "")).trim(),
+      //   usuarioEntidades: usuarioEntidades ? [usuarioEntidades] : [],
+      //   usuarioRoles,
+      // };
+      return null;
     }),
   self: protectedProcedure.query(async ({ ctx }) => {
     if (
@@ -62,10 +69,7 @@ export const userRouter = createTRPCRouter({
       },
     });
 
-    const res = await serverUserPerms(
-      ctx.session.user.id,
-      ctx.orgId ?? null,
-    );
+    const res = await serverUserPerms(ctx.session.user.id, ctx.orgId ?? null);
 
     return {
       ...res,
@@ -86,10 +90,7 @@ export const userRouter = createTRPCRouter({
     }
 
     const user = clerkClient.users.getUser(ctx.userId);
-    const res = await serverUserPerms(
-      ctx.session.user.id,
-      ctx.orgId ?? null,
-    );
+    const res = await serverUserPerms(ctx.session.user.id, ctx.orgId ?? null);
 
     let entidades = [];
     if (res.perms.has(PERMISO_ADMIN)) {
@@ -124,10 +125,7 @@ export const userRouter = createTRPCRouter({
     };
   }),
   selfEntidadAutoasignada: protectedProcedure.query(async ({ ctx }) => {
-    const res = await serverUserPerms(
-      ctx.session.user.id,
-      ctx.orgId ?? null,
-    );
+    const res = await serverUserPerms(ctx.session.user.id, ctx.orgId ?? null);
     const user = clerkClient.users.getUser(ctx.userId);
 
     let autoasignada = false;
@@ -232,33 +230,33 @@ export const userRouter = createTRPCRouter({
     await trpcTienePermisoCtx(ctx, PERMISO_ADMIN);
 
     // if (perms.has(PERMISO_ADMIN)) {
-      const users = await clerkClient.users.getUserList({
-        limit: 1000
+    const users = await clerkClient.users.getUserList({
+      limit: 1000,
+    });
+
+    const usersList = users.data;
+    const res = [];
+    for (const user of usersList) {
+      const usuarioEntidades = await db.query.usuarioEntidad.findFirst({
+        where: eq(schema.usuarioEntidad.userId, user.id),
       });
 
-      const usersList = users.data;
-      const res = [];
-      for (const user of usersList) {
-        const usuarioEntidades = await db.query.usuarioEntidad.findFirst({
-          where: eq(schema.usuarioEntidad.userId, user.id)
-        });
+      const usuarioRoles = await db.query.userRoles.findMany({
+        where: eq(schema.userRoles.userId, user.id),
+        with: {
+          rol: true,
+        },
+      });
 
-        const usuarioRoles = await db.query.userRoles.findMany({
-          where: eq(schema.userRoles.userId, user.id),
-          with: {
-            rol: true
-          }
-        });
+      res.push({
+        ...user,
+        fullName: ((user.firstName ?? "") + " " + (user.lastName ?? "")).trim(),
+        usuarioEntidades: usuarioEntidades ? [usuarioEntidades] : [],
+        usuarioRoles,
+      });
+    }
 
-        res.push({
-          ...user,
-          fullName: ((user.firstName ?? "") + " " + (user.lastName ?? "")).trim(),
-          usuarioEntidades: usuarioEntidades ? [usuarioEntidades] : [],
-          usuarioRoles,
-        });
-      }
-
-      return res;
+    return res;
     // }
 
     // // de todas las entidades asignadas obtengo sus usuarios
@@ -330,21 +328,21 @@ export const userRouter = createTRPCRouter({
       try {
         const user = await clerkClient.users.getUser(ctx.userId);
         const usuarioEntidades = await db.query.usuarioEntidad.findFirst({
-          where: eq(schema.usuarioEntidad.userId, user.id)
+          where: eq(schema.usuarioEntidad.userId, user.id),
         });
 
         const roles = await db.query.userRoles.findMany({
           where: eq(schema.userRoles.userId, user.id),
           with: {
-            rol: true
-          }
+            rol: true,
+          },
         });
 
         return {
           ...user,
           usuarioEntidades: usuarioEntidades ? [usuarioEntidades] : [],
           // roles,
-          assignedRoles: roles.map((v) => v.rol)
+          assignedRoles: roles.map((v) => v.rol),
         };
       } catch (_) {
         return null;

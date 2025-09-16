@@ -1,13 +1,13 @@
-"use client"
-import React, { createContext, useState, useEffect } from 'react';
-import { hasPermSet, PermisosValue } from '~/lib/permisos';
-import { api } from '~/trpc/react';
+"use client";
+import React, { createContext, useState, useEffect } from "react";
+import { hasPermSet, PermisosValue } from "~/lib/permisos";
+import { api } from "~/trpc/react";
 
 type Perms = Set<string>;
 
 interface PermsContextProps {
   perms: Perms;
-  isAdmin: boolean,
+  isAdmin: boolean;
   setPerms: (perms: Perms) => void;
   refreshPerms: () => void;
   hasPerm: (perm: PermisosValue) => boolean;
@@ -17,8 +17,7 @@ interface PermsContextProps {
 
 const PermsContext = createContext<PermsContextProps | undefined>(undefined);
 
-export function PermsProvider(props: {children: React.ReactNode;})
-{
+export function PermsProvider(props: { children: React.ReactNode }) {
   const [perms, setPerms] = useState<Perms>(new Set());
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const { data, refetch } = api.user.self.useQuery();
@@ -29,7 +28,7 @@ export function PermsProvider(props: {children: React.ReactNode;})
 
   const hasPerm = (perm: PermisosValue): boolean => {
     return hasPermSet(perms, perm);
-  }
+  };
 
   const hasBasePerm = (bPerm: string): boolean => {
     if (hasPerm("*")) {
@@ -43,7 +42,7 @@ export function PermsProvider(props: {children: React.ReactNode;})
       let bPermTemp = "";
       for (let k = 0; k <= i; k++) {
         if (bPermTemp !== "") {
-          bPermTemp += ':';
+          bPermTemp += ":";
         }
 
         bPermTemp += bPermDiv[k];
@@ -61,7 +60,7 @@ export function PermsProvider(props: {children: React.ReactNode;})
     }
 
     return false;
-  }
+  };
 
   const hasAnyPerm = (perms: PermisosValue[]): boolean => {
     for (const p of perms) {
@@ -71,7 +70,7 @@ export function PermsProvider(props: {children: React.ReactNode;})
     }
 
     return false;
-  }
+  };
 
   useEffect(() => {
     if (data) {
@@ -81,16 +80,26 @@ export function PermsProvider(props: {children: React.ReactNode;})
   }, [data]);
 
   return (
-    <PermsContext.Provider value={{ hasBasePerm, hasAnyPerm, isAdmin, perms, setPerms, refreshPerms, hasPerm }}>
+    <PermsContext.Provider
+      value={{
+        hasBasePerm,
+        hasAnyPerm,
+        isAdmin,
+        perms,
+        setPerms,
+        refreshPerms,
+        hasPerm,
+      }}
+    >
       {props.children}
     </PermsContext.Provider>
   );
-};
+}
 
 export const usePerms = () => {
   const context = React.useContext(PermsContext);
   if (!context) {
-    throw new Error('usePerms must be used within an PermsProvider');
+    throw new Error("usePerms must be used within an PermsProvider");
   }
 
   return context;
