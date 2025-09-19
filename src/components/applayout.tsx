@@ -18,7 +18,6 @@ export type AppLayoutProps = {
 };
 
 export default function AppLayout({ children, title }: AppLayoutProps) {
-  const t = useTranslations("layout"); // opcional
 
   return (
     <SidebarProvider>
@@ -46,13 +45,15 @@ export default function AppLayout({ children, title }: AppLayoutProps) {
         </div>
       </header>
 
-      {/* SIDEBAR desktop */}
-      <aside className="fixed bottom-0 left-0 top-[50px] hidden max-h-full w-[250px] overflow-y-auto border-r md:block">
-        <AppSidebar />
-      </aside>
+      <div className="flex w-full">
+        <aside className="fixed md:relative top-[50px] bottom-0 hidden md:block w-[250px] border-r overflow-y-auto">
+          <AppSidebar />
+        </aside>
 
-      {/* MAIN */}
-      <main className="relative mt-[50px] p-2 md:ml-[250px]">{children}</main>
+        <main className="flex-grow mt-[50px] p-2">
+          {children}
+        </main>
+      </div>
     </SidebarProvider>
   );
 }

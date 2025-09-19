@@ -37,9 +37,8 @@ export default function RootLayout({
           <ClerkProvider>
             <TRPCReactProvider cookies={cookieString}>
               <ErrorBoundary>
-                {/* AppLayout es CLIENTE y dentro usa UserButton, Sidebar, etc. */}
-                <AppLayout title="Bagdrop">
-                  <LayoutContainer>{children}</LayoutContainer>
+                <AppLayout title="Assets">
+                  {children}
                 </AppLayout>
               </ErrorBoundary>
             </TRPCReactProvider>

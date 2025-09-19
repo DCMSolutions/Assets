@@ -42,22 +42,13 @@ export function AppSidebar({ lang }: { lang?: string }) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
-              <Item text={t("home")} url="https://bagdrop.com.ar/" />
+              <Item text={t("employees")} url="/employees" />
             </SidebarMenuButton>
             <SidebarMenuButton asChild>
-              <Item text={t("lockers")} url="https://bagdrop.com.ar/#!/lockers" />
+              <Item text={t("assets")} url="/assets" />
             </SidebarMenuButton>
             <SidebarMenuButton asChild>
-              <Item
-                text={t("faq")}
-                url="https://bagdrop.com.ar/preguntas-frecuentes/"
-              />
-            </SidebarMenuButton>
-            <SidebarMenuButton asChild>
-              <Item text={t("contact")} url="https://bagdrop.com.ar/contacto/" />
-            </SidebarMenuButton>
-            <SidebarMenuButton asChild>
-              <div className="mt-8 w-[80%] justify-self-center">
+              <div className="mt-auto w-[80%] justify-self-center">
                 <Select
                   defaultValue={lang}
                   onValueChange={(v) =>
@@ -77,7 +68,6 @@ export function AppSidebar({ lang }: { lang?: string }) {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarContent>
-      <SidebarFooter />
     </Sidebar>
   );
 }

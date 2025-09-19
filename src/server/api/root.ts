@@ -21,6 +21,7 @@ import { configRouter } from "./routers/config";
 import { userRouter } from "./routers/users";
 import { companiesRouter } from "./routers/entities";
 import { testRouter } from "./routers/test";
+import { employeesRouter } from "./routers/employees";
 
 /**
  * This is the primary router for your server.
@@ -28,6 +29,7 @@ import { testRouter } from "./routers/test";
  * All routers added in /api/routers should be manually added here.
  */
 export const appRouter = createTRPCRouter({
+  employees: employeesRouter,
   city: cityRouter,
   store: storeRouter,
   size: sizeRouter,

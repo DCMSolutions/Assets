@@ -6,6 +6,8 @@ export const Messages = {
       language: "Idioma",
       home: "Home",
       lockers: "Lockers",
+      employees: "Empleados",
+      assets: "Activos",
       faq: "Preguntas Frecuentes",
       contact: "Contacto",
       mandatoryName: "Nombre es obligatorio",
@@ -93,6 +95,8 @@ export const Messages = {
     HomePage: {
       language: "Language",
       home: "Home",
+      employees: "Employees",
+      assets: "Assets",
       lockers: "Lockers",
       faq: "Frequently asked questions",
       contact: "Contact",
