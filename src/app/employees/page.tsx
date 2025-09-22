@@ -1,7 +1,7 @@
 import { Title } from "~/components/title";
 import { AddEmployeeDialog } from "./add-employee-dialog";
 import { EmployeesDataTable } from "./employee-data-table";
-import { EmployeesTableRecord, employeesTableColumns } from "./columns";
+import { employeesTableColumns } from "./columns";
 import { api } from "~/trpc/server";
 
 export default async function Employees() {

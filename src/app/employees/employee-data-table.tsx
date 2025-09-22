@@ -20,7 +20,7 @@ import {
   TableHeader,
   TableRow,
 } from "~/components/ui/newTable";
-import { EmployeesTableRecord, columns } from "./columns";
+import { EmployeesTableRecord } from "./columns";
 import TableToolbar from "~/components/tanstack/table-toolbar";
 import { DataTablePagination } from "~/components/tanstack/pagination";
 
@@ -50,7 +50,7 @@ export function EmployeesDataTable<TData extends EmployeesTableRecord>({
     const linked = (link: string) => {
       window.location.href = link;
     };
-    linked(`/employees/${row.getValue("rfid")}`);
+    linked(`/employees/${row.getValue("id")}`);
   };
 
   return (
@@ -62,7 +62,6 @@ export function EmployeesDataTable<TData extends EmployeesTableRecord>({
         columns={table.getAllColumns()}
       />
       */}
-      {/* Tabla de reservas */}
       <div className="overflow-x-auto rounded-md border shadow-md">
         <Table className="min-w-full divide-y divide-gray-200">
           <TableHeader>
