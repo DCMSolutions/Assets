@@ -2,6 +2,7 @@ import { Title } from "~/components/title";
 import { api } from "~/trpc/server";
 import { PERMISO_ADMIN, tienePermiso } from "~/lib/permisos";
 import { redirect } from "next/navigation";
+import GroupForm from "./group-form";
 
 export default async function GroupPage(props: { params: { groupId: string } }) {
   // const { perms } = await api.user.self.query();
@@ -9,11 +10,11 @@ export default async function GroupPage(props: { params: { groupId: string } }) 
   //   redirect("/accessdenied");
   // }
 
-  const group = await api.employees.getById.query({ id: props.params.groupId });
+  const group = await api.employees.groups.getById.query({ id: parseInt(props.params.groupId) });
 
   if (!group) {
-    return <Title>Este empleado ya no existe</Title>;
+    return <Title>Este grupo ya no existe</Title>;
   }
 
-  return <GroupForm employee={group} />;
+  return <GroupForm group={group} />;
 }

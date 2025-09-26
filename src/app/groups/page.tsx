@@ -1,5 +1,5 @@
 import { Title } from "~/components/title";
-import { employeesTableColumns } from "./columns";
+import { groupsTableColumns } from "./columns";
 import { api } from "~/trpc/server";
 import { AddGroupDialog } from "./add-group-dialog";
 import { GroupsDataTable } from "./groups-data-table";
@@ -15,7 +15,7 @@ export default async function Groups() {
         <AddGroupDialog />
       </div>
       <div>
-        <GroupsDataTable columns={employeesTableColumns} data={groups!} />
+        <GroupsDataTable columns={groupsTableColumns} data={groups!} />
       </div>
     </section>
   );

@@ -20,7 +20,7 @@ import {
   TableHeader,
   TableRow,
 } from "~/components/ui/newTable";
-import { EmployeesTableRecord } from "./columns";
+import { GroupsTableRecord } from "./columns";
 import TableToolbar from "~/components/tanstack/table-toolbar";
 import { DataTablePagination } from "~/components/tanstack/pagination";
 
@@ -29,7 +29,7 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
 }
 
-export function GroupsDataTable<TData extends EmployeesTableRecord>({
+export function GroupsDataTable<TData extends GroupsTableRecord>({
   columns,
   data,
 }: DataTableProps<TData, unknown>) {
@@ -50,7 +50,7 @@ export function GroupsDataTable<TData extends EmployeesTableRecord>({
     const linked = (link: string) => {
       window.location.href = link;
     };
-    linked(`/employees/${row.getValue("id")}`);
+    linked(`/groups/${row.original.id}`);
   };
 
   return (

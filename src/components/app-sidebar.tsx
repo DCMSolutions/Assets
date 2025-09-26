@@ -45,6 +45,9 @@ export function AppSidebar({ lang }: { lang?: string }) {
               <Item text={t("employees")} url="/employees" />
             </SidebarMenuButton>
             <SidebarMenuButton asChild>
+              <Item text={t("groups")} url="/groups" />
+            </SidebarMenuButton>
+            <SidebarMenuButton asChild>
               <Item text={t("assets")} url="/assets" />
             </SidebarMenuButton>
             <SidebarMenuButton asChild>

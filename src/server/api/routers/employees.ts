@@ -1,10 +1,12 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
-import { RouterOutputs } from "~/trpc/shared";
-import { publicDecrypt } from "crypto";
 import { groupsRouter } from "./groups";
 import { env } from "~/env";
 
+export type Employee = {
+  id: string,
+  nombre: string
+}
 
 // const employees = [
 //   {
@@ -94,7 +96,7 @@ export const employeesRouter = createTRPCRouter({
       if (!employeesResponse.ok) {
 
       }
-      const employees = await employeesResponse.json()
+      const employees: Employee[] = await employeesResponse.json()
       console.log(employees)
       return employees
 
@@ -115,7 +117,7 @@ export const employeesRouter = createTRPCRouter({
       if (!employeeResponse.ok) {
 
       }
-      const employee = await employeeResponse.json()
+      const employee: Employee = await employeeResponse.json()
       console.log(employee)
       return employee
 
@@ -188,5 +190,3 @@ export const employeesRouter = createTRPCRouter({
     }),
   groups: groupsRouter
 });
-
-export type Employee = RouterOutputs["employees"]["getById"]
