@@ -3,6 +3,7 @@ import { AddEmployeeDialog } from "./add-employee-dialog";
 import { EmployeesDataTable } from "./employee-data-table";
 import { employeesTableColumns } from "./columns";
 import { api } from "~/trpc/server";
+import { DataTable } from "~/components/generic-table";
 
 export default async function Employees() {
 
@@ -15,7 +16,7 @@ export default async function Employees() {
         <AddEmployeeDialog />
       </div>
       <div>
-        <EmployeesDataTable columns={employeesTableColumns} data={employees!} />
+        <DataTable columns={employeesTableColumns} data={employees!} pathToRowPage="/employees" />
       </div>
     </section>
   );

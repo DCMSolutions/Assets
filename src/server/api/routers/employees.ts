@@ -2,84 +2,19 @@ import { z } from "zod";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 import { groupsRouter } from "./groups";
 import { env } from "~/env";
+import { api } from "~/trpc/server";
+import { TRPCError } from "@trpc/server";
+import { ERROR_MESSAGES } from "~/lib/errors";
 
 export type Employee = {
   id: string,
   nombre: string
 }
 
-// const employees = [
-//   {
-//     id: "id001234",
-//     firstName: "Ana",
-//     lastName: "López",
-//     email: "ana.lopez@example.com",
-//     active: true
-//   },
-//   {
-//     id: "id001235",
-//     firstName: "Bruno",
-//     lastName: "Fernández",
-//     email: "bruno.fernandez@example.com",
-//     active: false
-//   },
-//   {
-//     id: "id001236",
-//     firstName: "Carla",
-//     lastName: "Gómez",
-//     email: "carla.gomez@example.com",
-//     active: true
-//   },
-//   {
-//     id: "id001237",
-//     firstName: "Diego",
-//     lastName: "Martínez",
-//     email: "diego.martinez@example.com",
-//     active: true
-//   },
-//   {
-//     id: "id001238",
-//     firstName: "Elena",
-//     lastName: "Ramírez",
-//     email: "elena.ramirez@example.com",
-//     active: false
-//   },
-//   {
-//     id: "id001239",
-//     firstName: "Francisco",
-//     lastName: "Ortega",
-//     email: "francisco.ortega@example.com",
-//     active: true
-//   },
-//   {
-//     id: "id001240",
-//     firstName: "Gabriela",
-//     lastName: "Torres",
-//     email: "gabriela.torres@example.com",
-//     active: true
-//   },
-//   {
-//     id: "id001241",
-//     firstName: "Hernán",
-//     lastName: "Vidal",
-//     email: "hernan.vidal@example.com",
-//     active: false
-//   },
-//   {
-//     id: "id001242",
-//     firstName: "Isabel",
-//     lastName: "Núñez",
-//     email: "isabel.nunez@example.com",
-//     active: true
-//   },
-//   {
-//     id: "id001243",
-//     firstName: "Julián",
-//     lastName: "Peña",
-//     email: "julian.pena@example.com",
-//     active: false
-//   }
-// ];
+export type EmployeeOption = {
+  value: string,
+  label: string
+}
 
 export const employeesRouter = createTRPCRouter({
   getAll: publicProcedure
@@ -94,10 +29,15 @@ export const employeesRouter = createTRPCRouter({
         })
 
       if (!employeesResponse.ok) {
-
+        const error = await employeesResponse.text()
+        console.log("Ocurrió un problema pidiendo la lista completa de empleados con el siguiente mensaje de error:", error)
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: ERROR_MESSAGES.GENERIC_INTERNAL_ERROR
+        })
       }
       const employees: Employee[] = await employeesResponse.json()
-      console.log(employees)
+      // console.log(employees)
       return employees
 
     }),
@@ -115,7 +55,12 @@ export const employeesRouter = createTRPCRouter({
         })
 
       if (!employeeResponse.ok) {
-
+        const error = await employeeResponse.text()
+        console.log(`Ocurrió un problema pidiendo un empleado (id: ${input.id}) con el siguiente mensaje de error:`, error)
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: ERROR_MESSAGES.GENERIC_INTERNAL_ERROR
+        })
       }
       const employee: Employee = await employeeResponse.json()
       console.log(employee)
@@ -141,6 +86,12 @@ export const employeesRouter = createTRPCRouter({
         })
 
       if (!createResponse.ok) {
+        const error = await createResponse.text()
+        console.dir(`Ocurrió un problema creando un empleado\n ${input}\n con el siguiente mensaje de error:`, error)
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: ERROR_MESSAGES.GENERIC_INTERNAL_ERROR
+        })
 
       }
     }),
@@ -155,7 +106,7 @@ export const employeesRouter = createTRPCRouter({
     )
     .mutation(async ({ input }) => {
 
-      const createResponse = await fetch(`${env.SERVER_URL}/api/AssetsEmpleado`,
+      const editResponse = await fetch(`${env.SERVER_URL}/api/AssetsEmpleado`,
         {
           method: "PUT",
           headers: {
@@ -165,7 +116,13 @@ export const employeesRouter = createTRPCRouter({
           body: JSON.stringify(input)
         })
 
-      if (!createResponse.ok) {
+      if (!editResponse.ok) {
+        const error = await editResponse.text()
+        console.dir(`Ocurrió un problema editando un empleado\n ${input}\n con el siguiente mensaje de error:`, error)
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: ERROR_MESSAGES.GENERIC_INTERNAL_ERROR
+        })
 
       }
     }),
@@ -176,7 +133,7 @@ export const employeesRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input }) => {
-      const employeeResponse = await fetch(`${env.SERVER_URL}/api/AssetsEmpleado/${input.id}`,
+      const deleteResponse = await fetch(`${env.SERVER_URL}/api/AssetsEmpleado/${input.id}`,
         {
           method: "DELETE",
           headers: {
@@ -184,9 +141,26 @@ export const employeesRouter = createTRPCRouter({
           }
         })
 
-      if (!employeeResponse.ok) {
+      if (!deleteResponse.ok) {
+        const error = await deleteResponse.text()
+        console.dir(`Ocurrió un problema eliminando un empleado\n ${input}\n con el siguiente mensaje de error:`, error)
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: ERROR_MESSAGES.GENERIC_INTERNAL_ERROR
+        })
 
       }
+    }),
+  getAllAsOptions: publicProcedure
+    .query(async () => {
+
+      const employees = await api.employees.getAll.query()
+
+      const employeesAsOptions: EmployeeOption[] = employees?.map(e => {
+        return { value: e.id, label: e.nombre }
+      })
+      return employeesAsOptions
+
     }),
   groups: groupsRouter
 });

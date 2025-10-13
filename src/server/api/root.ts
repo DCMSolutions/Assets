@@ -22,6 +22,7 @@ import { userRouter } from "./routers/users";
 import { companiesRouter } from "./routers/entities";
 import { testRouter } from "./routers/test";
 import { employeesRouter } from "./routers/employees";
+import { assetsRouter } from "./routers/assets";
 
 /**
  * This is the primary router for your server.
@@ -30,6 +31,7 @@ import { employeesRouter } from "./routers/employees";
  */
 export const appRouter = createTRPCRouter({
   employees: employeesRouter,
+  assets: assetsRouter,
   city: cityRouter,
   store: storeRouter,
   size: sizeRouter,

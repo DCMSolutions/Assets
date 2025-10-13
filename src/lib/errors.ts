@@ -5,6 +5,10 @@ import { useMemo } from "react";
 import { ZodError, z } from "zod";
 import { AppRouter } from "~/server/api/root";
 
+export const ERROR_MESSAGES = {
+  GENERIC_INTERNAL_ERROR: "Ocurrió un error inesperado. Inténtelo nuevamente."
+}
+
 export function asDatabseError(error: any) {
   if (error.name === "DatabaseError") {
     return {

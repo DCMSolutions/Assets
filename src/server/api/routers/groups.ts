@@ -2,6 +2,8 @@ import { z } from "zod";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 import { env } from "~/env";
 import { Employee } from "./employees";
+import { TRPCError } from "@trpc/server";
+import { ERROR_MESSAGES } from "~/lib/errors";
 
 export type Group = {
   id: number,
@@ -22,8 +24,11 @@ export const groupsRouter = createTRPCRouter({
 
       if (!groupsResponse.ok) {
         const error = await groupsResponse.text()
-        console.log("Ocurrió un problema al pedir la lista de grupos con el siguiente mensaje de error:", error)
-        return
+        console.log("Ocurrió un problema pidiendo la lista completa de grupos de empleados con el siguiente mensaje de error:", error)
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: ERROR_MESSAGES.GENERIC_INTERNAL_ERROR
+        })
       }
       const groups = await groupsResponse.json()
       console.log(groups)
@@ -46,7 +51,10 @@ export const groupsRouter = createTRPCRouter({
       if (!groupResponse.ok) {
         const error = await groupResponse.text()
         console.log(`Ocurrió un problema al pedir un grupo (id: ${input.id}) con el siguiente mensaje de error:`, error)
-        return
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: ERROR_MESSAGES.GENERIC_INTERNAL_ERROR
+        })
 
       }
       const group = await groupResponse.json()
@@ -76,7 +84,10 @@ export const groupsRouter = createTRPCRouter({
       if (!createResponse.ok) {
         const error = await createResponse.text()
         console.log("Ocurrió un problema al intentar crear un grupo nuevo con el siguiente mensaje de error:", error)
-        return
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: ERROR_MESSAGES.GENERIC_INTERNAL_ERROR
+        })
       }
       if (input.employeesToAssign.length === 0) {
         console.log("Se creó un grupo sin ningún empleado asignado")
