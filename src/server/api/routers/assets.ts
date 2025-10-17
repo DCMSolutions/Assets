@@ -16,6 +16,11 @@ export type AssetRaw = {
   estado: AssetState
 }
 
+export type Asset = Omit<AssetRaw, "idCategoria" | "idBoxAsignado"> & {
+  idCategoria: string,
+  idBoxAsignado: string | undefined
+}
+
 export type AssetForTable = Omit<AssetRaw, "poseedorActual"> & {
   nombrePoseedorActual: string | undefined,
   idPoseedorActual: string | undefined,
@@ -97,8 +102,18 @@ export const assetsRouter = createTRPCRouter({
         const error = await assetResponse.text()
         console.log(`Ocurrió un problema al intentar pedir un activo (${input.id}) con el siguiente mensaje de error:`, error)
       }
-      const asset: AssetRaw = await assetResponse.json()
-      console.log(asset)
+      const rawAsset: AssetRaw = await assetResponse.json()
+      console.log(rawAsset)
+
+      const { idCategoria, idBoxAsignado, ...rest } = rawAsset
+      const box = idBoxAsignado
+        ? idBoxAsignado.toString()
+        : ""
+      const asset: Asset = {
+        idCategoria: idCategoria.toString(),
+        idBoxAsignado: box,
+        ...rest
+      }
       return asset
 
     }),

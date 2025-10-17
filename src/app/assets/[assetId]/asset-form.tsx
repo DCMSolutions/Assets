@@ -61,7 +61,7 @@ interface AssetFormProps {
   asset: Asset,
   categoryOptions: CategoryOption[],
   employeeOptions: EmployeeOption[],
-  stateOptions: { value: AssetState, label: AssetState }[],
+  stateOptions: { value: string, label: AssetState }[],
   lockersAndBoxes: { locker: string, boxes: number[] }[]
 }
 
@@ -76,13 +76,15 @@ export default function AssetForm({
 
   const [id, _] = useState<string>(asset.id);
   const [modelo, setModelo] = useState<string>(asset.modelo);
-  const [idCategoria, setIdCategoria] = useState<number>(asset.idCategoria);
+  const [idCategoria, setIdCategoria] = useState<string>(asset.idCategoria);
   const [idEmpleadoAsignado, setIdEmpleadoAsignado] = useState<string>(asset.idEmpleadoAsignado ?? "");
-  const [idBoxAsignado, setIdBoxAsignado] = useState<number>(asset.idBoxAsignado);
+  const [idBoxAsignado, setIdBoxAsignado] = useState<string>(asset.idBoxAsignado ?? "");
   const [nroSerieLocker, setNroSerieLocker] = useState<string>(asset.nroSerieLocker ?? "");
   const [estado, setEstado] = useState<AssetState>(asset.estado);
 
   const [boxOptions, setBoxOptions] = useState<{ value: string, label: string }[]>([]);
+  const [boxDisabled, setBoxDisabled] = useState<boolean>(asset.nroSerieLocker ? false : true);
+
   const router = useRouter();
 
   const lockerOptions = lockersAndBoxes.map(item => {
@@ -102,9 +104,9 @@ export default function AssetForm({
       await editAsset({
         id,
         modelo,
-        idCategoria: idCategoria!,
+        idCategoria: parseInt(idCategoria!),
         idEmpleadoAsignado: idEmpleadoAsignado!,
-        idBoxAsignado: idBoxAsignado!,
+        idBoxAsignado: parseInt(idBoxAsignado!),
         nroSerieLocker,
         estado
       });
@@ -146,8 +148,8 @@ export default function AssetForm({
           />
           <Selector
             options={categoryOptions}
-            value={idCategoria?.toString()}
-            onChange={(category) => setIdCategoria(parseInt(category))}
+            value={idCategoria}
+            onChange={setIdCategoria}
             placeholder="Elegir categoría"
           />
           <Selector
@@ -158,18 +160,29 @@ export default function AssetForm({
           />
           <Selector
             options={lockerOptions}
-            value={nroSerieLocker}
+            value={nroSerieLocker ?? ""}
             onChange={selectedLocker => {
-              setBoxOptions(boxesAsOptionsByLocker(selectedLocker))
-              setNroSerieLocker(selectedLocker)
+              if (selectedLocker === " ") {
+                setNroSerieLocker("")
+                setIdBoxAsignado("")
+                setBoxDisabled(true)
+              } else {
+                setNroSerieLocker(selectedLocker)
+                setBoxDisabled(false)
+                setBoxOptions(boxesAsOptionsByLocker(selectedLocker))
+              }
             }}
             placeholder="Elegir locker"
           />
           <Selector
             options={boxOptions}
-            value={idBoxAsignado?.toString()}
-            onChange={selectedBox => setIdBoxAsignado(parseInt(selectedBox))}
-            placeholder="Elegir box"
+            value={idBoxAsignado ?? ""}
+            disabled={boxDisabled}
+            onChange={setIdBoxAsignado}
+            placeholder={boxDisabled
+              ? "Elegir locker para ver los boxes disponibles"
+              : "Elegir box"
+            }
           />
           <Selector
             options={stateOptions}
