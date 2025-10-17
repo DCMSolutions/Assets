@@ -35,7 +35,9 @@ export function AddEmployeeDialog() {
     try {
       await createEmployee({
         id: rfid,
-        nombre: lastName + ", " + firstName
+        nombre: lastName + ", " + firstName,
+        mail: email,
+        habilitado: active
       });
 
       toast.success("Empleado agregado correctamente");

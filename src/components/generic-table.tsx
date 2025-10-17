@@ -29,7 +29,7 @@ interface DataTableProps<TData, TValue> {
   pathToRowPage?: string
 }
 
-export function DataTable<TData>({
+export function DataTable<TData extends { id: string }>({
   columns,
   data,
   pathToRowPage = "/"
@@ -51,7 +51,7 @@ export function DataTable<TData>({
     const linked = (link: string) => {
       window.location.href = link;
     };
-    linked(`${pathToRowPage}/${row.getValue("id")}`);
+    linked(`${pathToRowPage}/${row.original.id}`);
   };
 
   return (

@@ -7,7 +7,6 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { TRPCReactProvider } from "~/trpc/react";
 import ErrorBoundary from "~/components/ErrorBoundary";
 import AppLayout from "~/components/applayout";
-import LayoutContainer from "~/components/layout-container";
 import { NextIntlClientProvider } from "next-intl";
 
 const inter = Inter({

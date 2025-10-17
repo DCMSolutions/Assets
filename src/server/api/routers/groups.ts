@@ -1,13 +1,34 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 import { env } from "~/env";
-import { Employee } from "./employees";
+import { EmployeeOption } from "./employees";
 import { TRPCError } from "@trpc/server";
 import { ERROR_MESSAGES } from "~/lib/errors";
+import { api } from "~/trpc/server";
 
-export type Group = {
+export type GroupRaw = {
   id: number,
   nombre: string,
+  descripcion: string | null,
+  esMantenimiento: boolean,
+  esAdministrador: boolean,
+  assetsAsignados: string[],
+  categoriasAssetsAsignadas: string[],
+  empleadosAsignados: string[]
+}
+
+export type Group = Omit<GroupRaw, "id"> & { id: string }
+
+export type GroupForTable = {
+  id: string,
+  nombre: string,
+  esMantenimiento: boolean,
+  esAdministrador: boolean,
+}
+
+export type GroupOption = {
+  value: string,
+  label: string,
 }
 
 export const groupsRouter = createTRPCRouter({
@@ -30,10 +51,36 @@ export const groupsRouter = createTRPCRouter({
           message: ERROR_MESSAGES.GENERIC_INTERNAL_ERROR
         })
       }
-      const groups = await groupsResponse.json()
+      const rawGroups: GroupRaw[] = await groupsResponse.json()
+      const groups: Group[] = rawGroups.map(g => {
+        const { id, ...rest } = g
+        return {
+          id: id.toString(),
+          ...rest
+        }
+      })
       console.log(groups)
       return groups
 
+    }),
+  getAllForTable: publicProcedure
+    .query(async () => {
+      const groups = await api.employees.groups.getAll.query()
+
+      const groupsForTable: GroupForTable[] = groups.map(g => {
+        const {
+          categoriasAssetsAsignadas,
+          empleadosAsignados,
+          descripcion,
+          assetsAsignados,
+          ...rest
+        } = g
+        return {
+          ...rest
+        }
+      })
+
+      return groupsForTable
     }),
   getById: publicProcedure
     .input(z.object({
@@ -57,7 +104,7 @@ export const groupsRouter = createTRPCRouter({
         })
 
       }
-      const group = await groupResponse.json()
+      const group: GroupRaw = await groupResponse.json()
       console.log(group)
       return group
 
@@ -214,7 +261,7 @@ export const groupsRouter = createTRPCRouter({
         return
 
       }
-      const employees: Employee[] = await employeesResponse.json()
+      const employees: EmployeeOption[] = await employeesResponse.json()
       console.log(employees)
       return employees
 

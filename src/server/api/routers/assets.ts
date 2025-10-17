@@ -5,7 +5,7 @@ import { categoriesRouter } from "./categories";
 import { nanoid } from "nanoid";
 import { api } from "~/trpc/server";
 
-export type Asset = {
+export type AssetRaw = {
   id: string,
   modelo: string,
   poseedorActual: string | undefined,
@@ -16,7 +16,7 @@ export type Asset = {
   estado: AssetState
 }
 
-export type AssetExtended = Omit<Asset, "poseedorActual"> & {
+export type AssetForTable = Omit<AssetRaw, "poseedorActual"> & {
   nombrePoseedorActual: string | undefined,
   idPoseedorActual: string | undefined,
   nombreEmpleadoAsignado: string | undefined,
@@ -51,12 +51,19 @@ export const assetsRouter = createTRPCRouter({
         const error = await assetsResponse.text()
         console.log("Ocurrió un problema al pedir todos los activos con el siguiente mensaje de error:", error)
       }
+      const assets: AssetRaw[] = await assetsResponse.json()
+      console.log("Todos los activos actuales:", assets)
+      return assets
+
+    }),
+  getAllForTable: publicProcedure
+    .query(async () => {
+
+      const assets = await api.assets.getAll.query()
       const categories = await api.assets.categories.getAll.query()
       const employees = await api.employees.getAll.query()
-      const assets: Asset[] = await assetsResponse.json()
-      console.log("Todos los activos actuales:", assets)
 
-      const assetsExtended: AssetExtended[] = assets.map((asset) => {
+      const assetsExtended: AssetForTable[] = assets.map((asset) => {
         const { poseedorActual, idCategoria, idEmpleadoAsignado, ...rest } = asset
         const holderName = employees.find((e) => e.id === poseedorActual)?.nombre
         const ownerName = employees.find((e) => e.id === idEmpleadoAsignado)?.nombre
@@ -72,7 +79,6 @@ export const assetsRouter = createTRPCRouter({
         }
       })
       return assetsExtended
-
     }),
   getById: publicProcedure
     .input(z.object({
@@ -91,7 +97,7 @@ export const assetsRouter = createTRPCRouter({
         const error = await assetResponse.text()
         console.log(`Ocurrió un problema al intentar pedir un activo (${input.id}) con el siguiente mensaje de error:`, error)
       }
-      const asset: Asset = await assetResponse.json()
+      const asset: AssetRaw = await assetResponse.json()
       console.log(asset)
       return asset
 

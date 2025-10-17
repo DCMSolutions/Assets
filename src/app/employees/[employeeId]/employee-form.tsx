@@ -19,7 +19,6 @@ import {
   AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
-  AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
@@ -46,8 +45,8 @@ export default function EmployeeForm({ employee }: { employee: Employee }) {
       await editEmployee({
         id,
         nombre: `${lastName}, ${firstName}`,
-        // email,
-        // active
+        mail: email,
+        habilitado: active
       });
       toast.success("Empleado modificado correctamente.");
       router.refresh();

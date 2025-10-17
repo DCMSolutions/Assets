@@ -7,6 +7,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarTrigger,
 } from "~/components/ui/sidebar";
 import {
   Select,
@@ -17,10 +18,13 @@ import {
 } from "./ui/select";
 import { setLang } from "~/app/actions";
 import { Languages } from "~/translations";
+import { Menu } from "lucide-react";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "./ui/accordion";
+import Link from "next/link";
 
 function Item({ text, url }: { text: string; url: string }) {
   return (
-    <ul className="main-nav outside-item-remove-margin">
+    <ul className="main-nav ">
       <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-home current-menu-item page_item page-item-11 current_page_item menu-item-27 first depth-0">
         <a href={url} data-level="1">
           <span className="menu-item-text">
@@ -36,20 +40,47 @@ export function AppSidebar({ lang }: { lang?: string }) {
   const t = useTranslations("HomePage");
 
   return (
-    <Sidebar>
-      <SidebarHeader className="mt-[114px]" />
-      <SidebarContent>
-        <SidebarMenu>
+    <Sidebar className="text-white border-none" collapsible="icon">
+      <SidebarHeader className="items-end">
+        <SidebarTrigger>
+          <Menu className="text-white" />
+        </SidebarTrigger>
+      </SidebarHeader>
+      <SidebarContent className="mt-[114px]">
+        <SidebarMenu >
           <SidebarMenuItem>
-            <SidebarMenuButton asChild>
-              <Item text={t("employees")} url="/employees" />
-            </SidebarMenuButton>
-            <SidebarMenuButton asChild>
-              <Item text={t("groups")} url="/groups" />
-            </SidebarMenuButton>
-            <SidebarMenuButton asChild>
-              <Item text={t("assets")} url="/assets" />
-            </SidebarMenuButton>
+            <Accordion type="single" collapsible>
+              <AccordionItem value="people" className="p-0 border border-black">
+                <AccordionTrigger className=" text-lg hover:font-bold hover:no-underline">Personas</AccordionTrigger>
+                <AccordionContent className="pb-0">
+                  <SidebarMenuButton asChild >
+                    <Link href={"/employees"} className="bg-[#2C3B41] border-b border-black">
+                      <span className="text-base"> Empleados </span>
+                    </Link>
+                  </SidebarMenuButton>
+                  <SidebarMenuButton asChild>
+                    <Link href={"/employees/groups"} className="bg-[#2C3B41] ">
+                      <span className="text-base"> Grupos </span>
+                    </Link>
+                  </SidebarMenuButton>
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="assets" className="p-0 border border-black">
+                <AccordionTrigger className=" text-lg hover:font-bold hover:no-underline">Activos</AccordionTrigger>
+                <AccordionContent>
+                  <SidebarMenuButton asChild>
+                    <Link href={"/assets"} className="bg-[#2C3B41] ">
+                      <span className="text-base"> Activos </span>
+                    </Link>
+                  </SidebarMenuButton>
+                  <SidebarMenuButton asChild>
+                    <Link href={"/assets/categories"} className="bg-[#2C3B41] ">
+                      <span className="text-base"> Categorías </span>
+                    </Link>
+                  </SidebarMenuButton>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
             <SidebarMenuButton asChild>
               <div className="mt-auto w-[80%] justify-self-center">
                 <Select
@@ -58,7 +89,7 @@ export function AppSidebar({ lang }: { lang?: string }) {
                     setLang(v as Languages).catch(console.error)
                   }
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="border-none">
                     <SelectValue placeholder={t("language")} />
                   </SelectTrigger>
                   <SelectContent>

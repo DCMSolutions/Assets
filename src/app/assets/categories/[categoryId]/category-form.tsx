@@ -19,6 +19,7 @@ import {
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Category } from "~/server/api/routers/categories";
+import { Card } from "~/components/ui/card";
 
 export default function CategoryForm({ category }: { category: Category }) {
   const [nombre, setNombre] = useState<string>(category.nombre);
@@ -73,7 +74,7 @@ export default function CategoryForm({ category }: { category: Category }) {
   );
 }
 
-function DeleteCategory(props: { categoryId: number }) {
+function DeleteCategory(props: { categoryId: string }) {
   const { mutateAsync: deleteCategory, isLoading } = api.assets.categories.delete.useMutation();
 
 
@@ -81,7 +82,7 @@ function DeleteCategory(props: { categoryId: number }) {
 
   const handleDelete: MouseEventHandler<HTMLButtonElement> = (e) => {
     e.preventDefault();
-    deleteCategory({ id: props.categoryId }).then(() => {
+    deleteCategory({ id: parseInt(props.categoryId) }).then(() => {
       toast.success("Categoría eliminada correctamente");
       router.push("/assets/categories");
     });

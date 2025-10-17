@@ -6,10 +6,19 @@ import { api } from "~/trpc/server";
 import { TRPCError } from "@trpc/server";
 import { ERROR_MESSAGES } from "~/lib/errors";
 
-export type Employee = {
+type EmployeeRaw = {
   id: string,
-  nombre: string
+  nombre: string,
+  mail: string | null,
+  habilitado: boolean,
+  assetsAsignados: string[],
+  categoriasAssetsAsignadas: number[],
+  gruposAsignados: number[]
 }
+
+export type Employee = EmployeeRaw
+
+export type EmployeeForTable = Omit<EmployeeRaw, "assetsAsignados" | "categoriasAssetsAsignadas" | "gruposAsignados">
 
 export type EmployeeOption = {
   value: string,
@@ -36,10 +45,23 @@ export const employeesRouter = createTRPCRouter({
           message: ERROR_MESSAGES.GENERIC_INTERNAL_ERROR
         })
       }
-      const employees: Employee[] = await employeesResponse.json()
-      // console.log(employees)
+      const employees: EmployeeRaw[] = await employeesResponse.json()
+      console.log(employees)
       return employees
 
+    }),
+  getAllForTable: publicProcedure
+    .query(async () => {
+      const allEmployees = await api.employees.getAll.query()
+      const employeesForTable: EmployeeForTable[] = allEmployees.map(e => {
+        return {
+          id: e.id,
+          nombre: e.nombre,
+          mail: e.mail,
+          habilitado: e.habilitado
+        }
+      })
+      return employeesForTable
     }),
   getById: publicProcedure
     .input(z.object({
@@ -62,7 +84,7 @@ export const employeesRouter = createTRPCRouter({
           message: ERROR_MESSAGES.GENERIC_INTERNAL_ERROR
         })
       }
-      const employee: Employee = await employeeResponse.json()
+      const employee: EmployeeRaw = await employeeResponse.json()
       console.log(employee)
       return employee
 
@@ -71,7 +93,9 @@ export const employeesRouter = createTRPCRouter({
     .input(
       z.object({
         id: z.string(),
-        nombre: z.string()
+        nombre: z.string(),
+        mail: z.string().nullish(),
+        habilitado: z.boolean()
       })
     )
     .mutation(async ({ input }) => {
@@ -100,8 +124,8 @@ export const employeesRouter = createTRPCRouter({
       z.object({
         id: z.string(),
         nombre: z.string(),
-        // email: z.string(),
-        // active: z.boolean()
+        mail: z.string().nullish(),
+        habilitado: z.boolean()
       })
     )
     .mutation(async ({ input }) => {

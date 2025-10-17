@@ -27,7 +27,7 @@ export default function GroupForm({ group }: { group: Group }) {
 
   const { data: employeeList, isLoading: loadingEmployees } = api.employees.getAll.useQuery()
   const { data: groupEmployeeList, isLoading: loadingGroupEmployees } =
-    api.employees.groups.getEmployees.useQuery({ id: group.id })
+    api.employees.groups.getEmployees.useQuery({ id: parseInt(group.id) })
   const options = employeeList ? employeeList.map((employee) => {
     return {
       label: employee.nombre,
@@ -63,7 +63,7 @@ export default function GroupForm({ group }: { group: Group }) {
 
     try {
       await editGroup({
-        id: group.id,
+        id: parseInt(group.id),
         nombre: name,
         toAssign,
         toUnassign

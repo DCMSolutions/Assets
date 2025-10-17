@@ -1,8 +1,8 @@
 import { Title } from "~/components/title";
 import { AddCategoryDialog } from "./add-category-dialog";
-import { CategoriesDataTable } from "./category-data-table";
 import { categoriesTableColumns } from "./columns";
 import { api } from "~/trpc/server";
+import { DataTable } from "~/components/generic-table";
 
 export default async function Categories() {
 
@@ -15,7 +15,7 @@ export default async function Categories() {
         <AddCategoryDialog />
       </div>
       <div>
-        <CategoriesDataTable columns={categoriesTableColumns} data={categories!} />
+        <DataTable columns={categoriesTableColumns} data={categories!} pathToRowPage="/assets/categories" />
       </div>
     </section>
   );
