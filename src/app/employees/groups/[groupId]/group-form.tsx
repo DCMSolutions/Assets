@@ -21,6 +21,8 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Group } from "~/server/api/routers/groups";
 import MultiSelect from "~/components/ui/multiselect";
+import { Checkbox } from "~/components/ui/checkbox";
+import { Label } from "~/components/ui/label";
 
 export default function GroupForm({ group }: { group: Group }) {
   const { mutateAsync: editGroup, isLoading: loadingMutation } = api.employees.groups.edit.useMutation();
@@ -28,7 +30,8 @@ export default function GroupForm({ group }: { group: Group }) {
   const { data: employeeList, isLoading: loadingEmployees } = api.employees.getAll.useQuery()
   const { data: groupEmployeeList, isLoading: loadingGroupEmployees } =
     api.employees.groups.getEmployees.useQuery({ id: parseInt(group.id) })
-  const options = employeeList ? employeeList.map((employee) => {
+
+  const employeeOptions = employeeList ? employeeList.map((employee) => {
     return {
       label: employee.nombre,
       value: employee.id
@@ -37,13 +40,15 @@ export default function GroupForm({ group }: { group: Group }) {
 
   const [name, setName] = useState(group?.nombre!);
   const [selectedEmployees, setSelectedEmployees] = useState<string[]>([])
+  const [isAdmin, setIsAdmin] = useState<boolean>(group.esAdministrador)
+  const [isService, setIsService] = useState<boolean>(group.esMantenimiento)
 
   const router = useRouter();
 
   useEffect(() => {
     if (loadingGroupEmployees) return
     setSelectedEmployees(groupEmployeeList!.map(e => e.id))
-  }, [loadingGroupEmployees])
+  }, [loadingGroupEmployees, groupEmployeeList])
 
   async function handleChange() {
     const toAssign: string[] = []
@@ -66,7 +71,9 @@ export default function GroupForm({ group }: { group: Group }) {
         id: parseInt(group.id),
         nombre: name,
         toAssign,
-        toUnassign
+        toUnassign,
+        admin: isAdmin,
+        mantenimiento: isService
       });
       toast.success("Grupo modificado correctamente.");
       router.refresh();
@@ -91,7 +98,7 @@ export default function GroupForm({ group }: { group: Group }) {
         </div>
 
         <Card className="p-5">
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <div>
             <Input
               id="name"
               placeholder="Nombre"
@@ -99,21 +106,31 @@ export default function GroupForm({ group }: { group: Group }) {
               onChange={(e) => setName(e.target.value)}
             />
           </div>
-        </Card>
-        <div className="flex justify-between ml-4 mr-4">
-          <MultiSelect
-            options={options}
-            placeholder={
-              loadingEmployees || loadingGroupEmployees
-                ? "Cargando empleados..."
-                : "Seleccione empleados"
+          <div className="flex flex-col gap-6 ">
+            <MultiSelect
+              options={employeeOptions}
+              placeholder={
+                loadingEmployees || loadingGroupEmployees
+                  ? "Cargando empleados..."
+                  : "Seleccione empleados"
 
-            }
-            value={selectedEmployees}
-            onChange={setSelectedEmployees}
-            isLoading={loadingGroupEmployees || loadingEmployees}
-            disabled={loadingMutation}
-          />
+              }
+              value={selectedEmployees}
+              onChange={setSelectedEmployees}
+              isLoading={loadingGroupEmployees || loadingEmployees}
+              disabled={loadingMutation}
+            />
+            <div>
+              <Checkbox id="admin" checked={isAdmin} onCheckedChange={() => setIsAdmin(prev => !prev)} />
+              <Label className="pl-2" htmlFor="admin">Grupo administrador</Label>
+            </div>
+            <div>
+              <Checkbox id="service" checked={isService} onCheckedChange={() => setIsService(prev => !prev)} />
+              <Label className="pl-2" htmlFor="service">Grupo de mantenimiento</Label>
+            </div>
+          </div>
+        </Card>
+        <div className="flex flex-row-reverse">
           <DeleteGroup groupId={group.id!} />
         </div>
       </section>
@@ -121,7 +138,7 @@ export default function GroupForm({ group }: { group: Group }) {
   );
 }
 
-function DeleteGroup(props: { groupId: number }) {
+function DeleteGroup(props: { groupId: string }) {
   const { mutateAsync: deleteGroup, isLoading } =
     api.employees.groups.delete.useMutation();
 
@@ -129,7 +146,7 @@ function DeleteGroup(props: { groupId: number }) {
 
   const handleDelete: MouseEventHandler<HTMLButtonElement> = (e) => {
     e.preventDefault();
-    deleteGroup({ id: props.groupId }).then(() => {
+    deleteGroup({ id: parseInt(props.groupId) }).then(() => {
       toast.success("Grupo eliminado correctamente");
       router.push("/groups");
     });

@@ -214,16 +214,16 @@ export const assetsRouter = createTRPCRouter({
     }),
   getLockersAndBoxes: publicProcedure
     .query(async () => {
-      return [
-        {
-          locker: "LockerA",
-          boxes: [1, 2, 3]
-        },
-        {
-          locker: "LockerB",
-          boxes: [3, 5]
-        }
-      ]
+      // return [
+      //   {
+      //     locker: "LockerA",
+      //     boxes: [1, 2, 3]
+      //   },
+      //   {
+      //     locker: "LockerB",
+      //     boxes: [3, 5]
+      //   }
+      // ]
       const lockersAndBoxesResponse = await fetch(`${env.SERVER_URL}/api/AssetsGestion/AllBoxesDisp`,
         {
           method: "GET",
@@ -237,6 +237,7 @@ export const assetsRouter = createTRPCRouter({
         return
       }
       const lockersAndBoxes = await lockersAndBoxesResponse.json()
+      console.dir(lockersAndBoxes)
       return lockersAndBoxes
     }),
   categories: categoriesRouter

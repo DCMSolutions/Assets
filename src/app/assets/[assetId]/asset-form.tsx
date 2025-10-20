@@ -62,7 +62,7 @@ interface AssetFormProps {
   categoryOptions: CategoryOption[],
   employeeOptions: EmployeeOption[],
   stateOptions: { value: string, label: AssetState }[],
-  lockersAndBoxes: { locker: string, boxes: number[] }[]
+  lockersAndBoxes: { nroSerieLocker: string, boxes: number[] }[]
 }
 
 export default function AssetForm({
@@ -88,11 +88,11 @@ export default function AssetForm({
   const router = useRouter();
 
   const lockerOptions = lockersAndBoxes.map(item => {
-    return { value: item.locker, label: item.locker }
+    return { value: item.nroSerieLocker, label: item.nroSerieLocker }
   })
 
   const boxesAsOptionsByLocker = (locker: string) => {
-    const boxes = lockersAndBoxes.find(item => item.locker === locker)?.boxes
+    const boxes = lockersAndBoxes.find(item => item.nroSerieLocker === locker)?.boxes
     const boxesAsOptions = boxes!.map(box => {
       return { value: box.toString(), label: box.toString() }
     })
@@ -168,6 +168,7 @@ export default function AssetForm({
                 setBoxDisabled(true)
               } else {
                 setNroSerieLocker(selectedLocker)
+                setIdBoxAsignado("")
                 setBoxDisabled(false)
                 setBoxOptions(boxesAsOptionsByLocker(selectedLocker))
               }

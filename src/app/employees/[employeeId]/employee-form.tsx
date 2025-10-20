@@ -33,8 +33,8 @@ export default function EmployeeForm({ employee }: { employee: Employee }) {
   const [id, setId] = useState<string>(employee?.id!);
   const [firstName, setFirstName] = useState(employee.nombre.split(", ")[1]);
   const [lastName, setLastName] = useState(employee.nombre.split(", ")[0]);
-  const [email, setEmail] = useState(employee?.email!);
-  const [active, setActive] = useState<boolean>(employee?.active!);
+  const [email, setEmail] = useState(employee?.mail!);
+  const [active, setActive] = useState<boolean>(employee?.habilitado!);
 
   const { mutateAsync: editEmployee, isLoading } = api.employees.edit.useMutation();
 
@@ -71,25 +71,27 @@ export default function EmployeeForm({ employee }: { employee: Employee }) {
         </div>
 
         <Card className="p-5">
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <div className="flex flex-col gap-6">
             <Input
               id="rfid"
               placeholder="RFID"
               value={id}
               onChange={(e) => setId(e.target.value)}
             />
-            <Input
-              id="firstName"
-              placeholder="Nombre"
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-            />
-            <Input
-              id="lastName"
-              placeholder="Apellido"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-            />
+            <div className="flex gap-4">
+              <Input
+                id="firstName"
+                placeholder="Nombre"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+              />
+              <Input
+                id="lastName"
+                placeholder="Apellido"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+              />
+            </div>
             <Input
               id="email"
               placeholder="Email"

@@ -8,6 +8,8 @@ import { TRPCReactProvider } from "~/trpc/react";
 import ErrorBoundary from "~/components/ErrorBoundary";
 import AppLayout from "~/components/applayout";
 import { NextIntlClientProvider } from "next-intl";
+import { Suspense } from "react";
+import Loading from "./loading";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -37,7 +39,9 @@ export default function RootLayout({
             <TRPCReactProvider cookies={cookieString}>
               <ErrorBoundary>
                 <AppLayout title="Assets">
-                  {children}
+                  <Suspense fallback={<Loading />} >
+                    {children}
+                  </Suspense>
                 </AppLayout>
               </ErrorBoundary>
             </TRPCReactProvider>

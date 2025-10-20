@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 import { env } from "~/env";
-import { EmployeeOption } from "./employees";
+import { Employee, EmployeeOption } from "./employees";
 import { TRPCError } from "@trpc/server";
 import { ERROR_MESSAGES } from "~/lib/errors";
 import { api } from "~/trpc/server";
@@ -163,6 +163,8 @@ export const groupsRouter = createTRPCRouter({
         nombre: z.string(),
         toAssign: z.array(z.string()),
         toUnassign: z.array(z.string()),
+        admin: z.boolean(),
+        mantenimiento: z.boolean()
       })
     )
     .mutation(async ({ input }) => {
@@ -176,7 +178,9 @@ export const groupsRouter = createTRPCRouter({
           },
           body: JSON.stringify({
             id: input.id,
-            nombre: input.nombre
+            nombre: input.nombre,
+            esAdministrador: input.admin,
+            esMantenimiento: input.mantenimiento
           })
         })
 
@@ -261,7 +265,7 @@ export const groupsRouter = createTRPCRouter({
         return
 
       }
-      const employees: EmployeeOption[] = await employeesResponse.json()
+      const employees: Employee[] = await employeesResponse.json()
       console.log(employees)
       return employees
 

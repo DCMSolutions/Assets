@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "~/components/ui/button";
+import { Checkbox } from "~/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -13,6 +14,7 @@ import {
   DialogTitle,
 } from "~/components/ui/dialog";
 import { Input } from "~/components/ui/input";
+import { Label } from "~/components/ui/label";
 import MultiSelect from "~/components/ui/multiselect";
 import { asTRPCError } from "~/lib/errors";
 import { api } from "~/trpc/react";
@@ -29,6 +31,8 @@ export function AddGroupDialog() {
 
   const [name, setName] = useState("");
   const [employeesToAssign, setEmployeesToAssign] = useState<string[]>([])
+  const [isAdmin, setIsAdmin] = useState<boolean>(false)
+  const [isService, setIsService] = useState<boolean>(false)
 
   const [open, setOpen] = useState(false);
 
@@ -76,6 +80,14 @@ export function AddGroupDialog() {
             isLoading={isLoading}
             disabled={disabled}
           />
+          <div>
+            <Checkbox id="admin" checked={isAdmin} onCheckedChange={() => setIsAdmin(prev => !prev)} />
+            <Label className="pl-2" htmlFor="admin">Grupo administrador</Label>
+          </div>
+          <div>
+            <Checkbox id="service" checked={isService} onCheckedChange={() => setIsService(prev => !prev)} />
+            <Label className="pl-2" htmlFor="service">Grupo de mantenimiento</Label>
+          </div>
           <DialogFooter>
             <Button disabled={disabled || isLoading} onClick={handleCreate}>
               {disabled && (
