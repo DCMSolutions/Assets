@@ -38,7 +38,7 @@ export default function RootLayout({
           <ClerkProvider>
             <TRPCReactProvider cookies={cookieString}>
               <ErrorBoundary>
-                <AppLayout title="Assets">
+                <AppLayout>
                   <Suspense fallback={<Loading />} >
                     {children}
                   </Suspense>

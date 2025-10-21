@@ -50,7 +50,7 @@ export function AppSidebar({ lang }: { lang?: string }) {
         <SidebarMenu >
           <SidebarMenuItem>
             <Accordion type="single" collapsible>
-              <AccordionItem value="people" className="p-0 border border-black">
+              <AccordionItem value="people" className="p-0 border border-black pl-4">
                 <AccordionTrigger className=" text-lg hover:font-bold hover:no-underline">Personas</AccordionTrigger>
                 <AccordionContent className="pb-0">
                   <SidebarMenuButton asChild >
@@ -65,7 +65,7 @@ export function AppSidebar({ lang }: { lang?: string }) {
                   </SidebarMenuButton>
                 </AccordionContent>
               </AccordionItem>
-              <AccordionItem value="assets" className="p-0 border border-black">
+              <AccordionItem value="assets" className="p-0 border border-black pl-4">
                 <AccordionTrigger className=" text-lg hover:font-bold hover:no-underline">Activos</AccordionTrigger>
                 <AccordionContent>
                   <SidebarMenuButton asChild>
@@ -80,25 +80,32 @@ export function AppSidebar({ lang }: { lang?: string }) {
                   </SidebarMenuButton>
                 </AccordionContent>
               </AccordionItem>
+              <AccordionItem value="settings" className="p-0 border border-black pl-4">
+                <AccordionTrigger className=" text-lg hover:font-bold hover:no-underline">Ajustes</AccordionTrigger>
+                <AccordionContent>
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="config" className="p-0 border border-black pl-4">
+                <AccordionTrigger className=" text-lg hover:font-bold hover:no-underline">Configuración</AccordionTrigger>
+                <AccordionContent>
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="analytics" className="p-0 border border-black pl-4">
+                <AccordionTrigger className=" text-lg hover:font-bold hover:no-underline">Reportes</AccordionTrigger>
+                <AccordionContent>
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="permissions" className="p-0 border border-black pl-4">
+                <AccordionTrigger className=" text-lg hover:font-bold hover:no-underline">Permisos</AccordionTrigger>
+                <AccordionContent>
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="monitor" className="p-0 border border-black pl-4">
+                <AccordionTrigger className=" text-lg hover:font-bold hover:no-underline">Monitor</AccordionTrigger>
+                <AccordionContent>
+                </AccordionContent>
+              </AccordionItem>
             </Accordion>
-            <SidebarMenuButton asChild>
-              <div className="mt-auto w-[80%] justify-self-center">
-                <Select
-                  defaultValue={lang}
-                  onValueChange={(v) =>
-                    setLang(v as Languages).catch(console.error)
-                  }
-                >
-                  <SelectTrigger className="border-none">
-                    <SelectValue placeholder={t("language")} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="es">Español</SelectItem>
-                    <SelectItem value="en">English</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarContent>

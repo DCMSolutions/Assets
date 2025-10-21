@@ -17,7 +17,7 @@ export type AppLayoutProps = {
   title?: React.ReactNode | string;
 };
 
-export default function AppLayout({ children, title }: AppLayoutProps) {
+export default function AppLayout({ children }: AppLayoutProps) {
 
   return (
     <SidebarProvider>
