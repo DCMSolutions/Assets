@@ -16,6 +16,7 @@ import {
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { asTRPCError } from "~/lib/errors";
+import { CategoryOption } from "~/server/api/routers/categories";
 import { api } from "~/trpc/react";
 
 export function AddEmployeeDialog() {
@@ -26,6 +27,7 @@ export function AddEmployeeDialog() {
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [active, setActive] = useState<boolean>(true);
+
 
   const [open, setOpen] = useState(false);
 

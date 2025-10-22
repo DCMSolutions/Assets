@@ -27,7 +27,7 @@ interface AddAssetDialogProps {
   categoryOptions: CategoryOption[],
   employeeOptions: EmployeeOption[],
   stateOptions: { value: string, label: AssetState }[],
-  lockersAndBoxes: { locker: string, boxes: number[] }[]
+  lockersAndBoxes: { nroSerieLocker: string, boxes: number[] }[]
 }
 
 export function AddAssetDialog({
@@ -55,12 +55,12 @@ export function AddAssetDialog({
 
   const lockerOptions = lockersAndBoxes
     ? lockersAndBoxes.map(item => {
-      return { value: item.locker, label: item.locker }
+      return { value: item.nroSerieLocker, label: item.nroSerieLocker }
     })
     : []
 
   const boxesAsOptionsByLocker = (locker: string) => {
-    const boxes = lockersAndBoxes.find(item => item.locker === locker)?.boxes
+    const boxes = lockersAndBoxes.find(item => item.nroSerieLocker === locker)?.boxes
     const boxesAsOptions = boxes!.map(box => {
       return { value: box.toString(), label: box.toString() }
     })
@@ -97,7 +97,7 @@ export function AddAssetDialog({
         idEmpleadoAsignado: employee,
         idBoxAsignado: box,
         nroSerieLocker: locker,
-        estado
+        estado: parseInt(estado as string)
       });
 
       toast.success("Activo agregado correctamente");

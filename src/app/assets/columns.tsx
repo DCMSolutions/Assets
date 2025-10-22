@@ -1,7 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { AssetExtended } from "~/server/api/routers/assets";
+import { AssetForTable } from "~/server/api/routers/assets";
 
 // Definir el tipo de datos para la tabla de reservas.
 // export type AssetTableRecord = {
@@ -15,7 +15,7 @@ import { AssetExtended } from "~/server/api/routers/assets";
 //   estado: string;
 // };
 
-export const assetsTableColumns: ColumnDef<AssetExtended>[] = [
+export const assetsTableColumns: ColumnDef<AssetForTable>[] = [
   {
     accessorKey: "id",
     header: "TAG",
@@ -48,7 +48,7 @@ export const assetsTableColumns: ColumnDef<AssetExtended>[] = [
     accessorKey: "nombrePoseedorActual",
     header: "En manos de",
     cell: ({ row }) => (
-      <div className="text-center">{row.getValue("nombrePoseedorActual") || "-"}</div>
+      <div className="text-center">{row.getValue("nombrePoseedorActual") || ""}</div>
     ),
   },
   {

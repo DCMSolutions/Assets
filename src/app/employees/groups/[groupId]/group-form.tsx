@@ -148,7 +148,7 @@ function DeleteGroup(props: { groupId: string }) {
     e.preventDefault();
     deleteGroup({ id: parseInt(props.groupId) }).then(() => {
       toast.success("Grupo eliminado correctamente");
-      router.push("/groups");
+      router.push("/employees/groups");
     });
   };
   return (

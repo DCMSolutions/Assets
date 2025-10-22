@@ -112,12 +112,15 @@ export const groupsRouter = createTRPCRouter({
   create: publicProcedure
     .input(
       z.object({
-        name: z.string(),
+        nombre: z.string(),
+        esAdministrador: z.boolean(),
+        esMantenimiento: z.boolean(),
         employeesToAssign: z.array(z.string())
       })
     )
     .mutation(async ({ input }) => {
 
+      const { employeesToAssign, ...grupo } = input
       const createResponse = await fetch(`${env.SERVER_URL}/api/AssetsGrupoEmpleados`,
         {
           method: "POST",
@@ -125,7 +128,7 @@ export const groupsRouter = createTRPCRouter({
             Authorization: `Bearer ${env.TOKEN_EMPRESA}`,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ nombre: input.name })
+          body: JSON.stringify(grupo)
         })
 
       if (!createResponse.ok) {
@@ -152,7 +155,7 @@ export const groupsRouter = createTRPCRouter({
         })
       if (!assignEmployeesResponse.ok) {
         const error = await assignEmployeesResponse.text()
-        console.log(`Ocurrió un problema al intentar asignar empleados a un grupo recién creado (id: ${group.id}, nombre: ${input.name}) con el siguiente mensaje de error:`, error)
+        console.log(`Ocurrió un problema al intentar asignar empleados a un grupo recién creado (id: ${group.id}, nombre: ${input.nombre}) con el siguiente mensaje de error:`, error)
         return
       }
     }),

@@ -41,8 +41,10 @@ export function AddGroupDialog() {
   async function handleCreate() {
     try {
       await createGroup({
-        name,
-        employeesToAssign
+        nombre: name,
+        employeesToAssign,
+        esAdministrador: isAdmin,
+        esMantenimiento: isService
       });
 
       toast.success("Grupo agregado correctamente");

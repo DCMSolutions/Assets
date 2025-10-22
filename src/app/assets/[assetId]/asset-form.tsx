@@ -2,7 +2,7 @@
 
 import { CheckIcon, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { MouseEventHandler, useState } from "react";
+import { MouseEventHandler, useEffect, useState } from "react";
 import { toast } from "sonner";
 import Selector from "~/components/selector";
 import { Title } from "~/components/title";
@@ -11,7 +11,7 @@ import { Button } from "~/components/ui/button";
 import { Card } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import { asTRPCError } from "~/lib/errors";
-import { Asset, AssetState } from "~/server/api/routers/assets";
+import { Asset } from "~/server/api/routers/assets";
 import { CategoryOption } from "~/server/api/routers/categories";
 import { EmployeeOption } from "~/server/api/routers/employees";
 import { api } from "~/trpc/react";
@@ -61,7 +61,7 @@ interface AssetFormProps {
   asset: Asset,
   categoryOptions: CategoryOption[],
   employeeOptions: EmployeeOption[],
-  stateOptions: { value: string, label: AssetState }[],
+  stateOptions: { value: string, label: string }[],
   lockersAndBoxes: { nroSerieLocker: string, boxes: number[] }[]
 }
 
@@ -80,11 +80,12 @@ export default function AssetForm({
   const [idEmpleadoAsignado, setIdEmpleadoAsignado] = useState<string>(asset.idEmpleadoAsignado ?? "");
   const [idBoxAsignado, setIdBoxAsignado] = useState<string>(asset.idBoxAsignado ?? "");
   const [nroSerieLocker, setNroSerieLocker] = useState<string>(asset.nroSerieLocker ?? "");
-  const [estado, setEstado] = useState<AssetState>(asset.estado);
+  const [estado, setEstado] = useState<string>();
 
   const [boxOptions, setBoxOptions] = useState<{ value: string, label: string }[]>([]);
   const [boxDisabled, setBoxDisabled] = useState<boolean>(asset.nroSerieLocker ? false : true);
 
+  const STATES = stateOptions.map(option => option.label)
   const router = useRouter();
 
   const lockerOptions = lockersAndBoxes.map(item => {
@@ -96,8 +97,17 @@ export default function AssetForm({
     const boxesAsOptions = boxes!.map(box => {
       return { value: box.toString(), label: box.toString() }
     })
+    if (locker === asset.nroSerieLocker) {
+      boxesAsOptions.push({ value: asset.idBoxAsignado!, label: asset.idBoxAsignado! })
+    }
     return boxesAsOptions
   }
+
+  useEffect(() => {
+    setEstado(asset.estado)
+    setBoxOptions(boxesAsOptionsByLocker(asset.nroSerieLocker!))
+    setIdBoxAsignado(asset.idBoxAsignado!)
+  }, [])
 
   async function handleEdit() {
     try {
@@ -108,7 +118,7 @@ export default function AssetForm({
         idEmpleadoAsignado: idEmpleadoAsignado!,
         idBoxAsignado: parseInt(idBoxAsignado!),
         nroSerieLocker,
-        estado
+        estado: parseInt(estado!)
       });
 
       toast.success("Activo modificado correctamente");
@@ -120,7 +130,7 @@ export default function AssetForm({
   }
 
   return (
-    <section className="space-y-2">
+    <section className="pl-4 space-y-2">
       <div className="flex justify-between mr-4">
         <Title>Modificar activo</Title>
         <Button disabled={loadingEdition} onClick={handleEdit}>
@@ -187,9 +197,10 @@ export default function AssetForm({
           />
           <Selector
             options={stateOptions}
-            value={estado}
-            onChange={state => setEstado(state as AssetState)}
+            value={estado!}
+            onChange={setEstado}
             placeholder="Elegir estado"
+            required
           />
 
         </div>

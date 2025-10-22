@@ -6,7 +6,7 @@ import { api } from "~/trpc/server";
 
 export default async function Assets() {
 
-  const assets = await api.assets.getAll.query()
+  const assets = await api.assets.getAllForTable.query()
   const employees = await api.employees.getAllAsOptions.query()
   const categories = await api.assets.categories.getAllAsOptions.query()
   const states = await api.assets.getStatesAsOptions.query()

@@ -36,13 +36,13 @@ export const categoriesRouter = createTRPCRouter({
         return
       }
       const categories: CategoryRaw[] = await categoriesResponse.json()
-      // console.log(categories)
       const categoriesToReturn: Category[] = categories?.map((category) => {
         return {
           id: category.id.toString(),
           nombre: category.nombre
         }
       })
+      console.log(categoriesToReturn)
       return categoriesToReturn
 
     }),

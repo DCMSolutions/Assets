@@ -11,31 +11,33 @@ export type AssetRaw = {
   poseedorActual: string | undefined,
   idCategoria: number,
   idEmpleadoAsignado: string | undefined,
-  idBoxAsignado: number,
-  nroSerieLocker: string,
-  estado: AssetState
+  idBoxAsignado: number | undefined,
+  nroSerieLocker: string | undefined,
+  estado: number
 }
 
-export type Asset = Omit<AssetRaw, "idCategoria" | "idBoxAsignado"> & {
+export type Asset = Omit<AssetRaw, "idCategoria" | "idBoxAsignado" | "estado"> & {
   idCategoria: string,
-  idBoxAsignado: string | undefined
+  idBoxAsignado: string | undefined,
+  estado: string
 }
 
-export type AssetForTable = Omit<AssetRaw, "poseedorActual"> & {
+export type AssetForTable = Omit<AssetRaw, "poseedorActual" | "estado"> & {
   nombrePoseedorActual: string | undefined,
   idPoseedorActual: string | undefined,
   nombreEmpleadoAsignado: string | undefined,
   categoria: string,
+  estado: AssetState
 }
 
-export const STATES = {
-  FUNCIONAL: "Funcional",
-  DEFECTUOSO: "Defectuoso",
-  MANTENIMIENTO: "Mantenimiento",
-  PERDIDO: "Perdido",
-  EOL: "EOL",
-  ARCHIVADO: "Archivado"
-} as const
+export const STATES = [
+  "Funcional",
+  "Defectuoso",
+  "Mantenimiento",
+  "Perdido",
+  "EOL",
+  "Archivado"
+]
 
 export type AssetState = typeof STATES[keyof typeof STATES]
 
@@ -57,7 +59,7 @@ export const assetsRouter = createTRPCRouter({
         console.log("Ocurrió un problema al pedir todos los activos con el siguiente mensaje de error:", error)
       }
       const assets: AssetRaw[] = await assetsResponse.json()
-      console.log("Todos los activos actuales:", assets)
+      // console.log("Todos los activos actuales:", assets)
       return assets
 
     }),
@@ -69,20 +71,25 @@ export const assetsRouter = createTRPCRouter({
       const employees = await api.employees.getAll.query()
 
       const assetsExtended: AssetForTable[] = assets.map((asset) => {
-        const { poseedorActual, idCategoria, idEmpleadoAsignado, ...rest } = asset
+        const { poseedorActual, idCategoria, idEmpleadoAsignado, estado, ...rest } = asset
         const holderName = employees.find((e) => e.id === poseedorActual)?.nombre
         const ownerName = employees.find((e) => e.id === idEmpleadoAsignado)?.nombre
         const categoryName = categories!.find((c) => c.id === idCategoria.toString())!.nombre
-        return {
+        console.log("SE CATEGORY", categoryName)
+        const obj = {
+          ...rest,
           idPoseedorActual: poseedorActual,
           nombrePoseedorActual: holderName,
           idEmpleadoAsignado,
           nombreEmpleadoAsignado: ownerName,
           idCategoria,
+          estado: STATES[estado]!,
           categoria: categoryName,
-          ...rest
         }
+        console.log(obj)
+        return obj
       })
+      console.log(assetsExtended)
       return assetsExtended
     }),
   getById: publicProcedure
@@ -105,13 +112,16 @@ export const assetsRouter = createTRPCRouter({
       const rawAsset: AssetRaw = await assetResponse.json()
       console.log(rawAsset)
 
-      const { idCategoria, idBoxAsignado, ...rest } = rawAsset
+      const { idCategoria, idBoxAsignado, nroSerieLocker, estado, ...rest } = rawAsset
+      const locker = nroSerieLocker ?? ""
       const box = idBoxAsignado
         ? idBoxAsignado.toString()
         : ""
       const asset: Asset = {
         idCategoria: idCategoria.toString(),
+        nroSerieLocker: locker,
         idBoxAsignado: box,
+        estado: estado.toString(),
         ...rest
       }
       return asset
@@ -126,13 +136,10 @@ export const assetsRouter = createTRPCRouter({
         idEmpleadoAsignado: z.string().nullish(),
         idBoxAsignado: z.number().nullish(),
         nroSerieLocker: z.string().nullish(),
-        estado: z.string()
-        // estado: z.enum(["Funcional", "Defectuoso", "Mantenimiento", "Perdido", "EOL", "Archivado"])
+        estado: z.number()
       })
     )
     .mutation(async ({ input }) => {
-      const { estado, ...rest } = input
-
       const createResponse = await fetch(`${env.SERVER_URL}/api/Asset`,
         {
           method: "POST",
@@ -140,7 +147,7 @@ export const assetsRouter = createTRPCRouter({
             Authorization: `Bearer ${env.TOKEN_EMPRESA}`,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ ...rest, estado: parseInt(estado) })
+          body: JSON.stringify(input)
         })
 
       if (!createResponse.ok) {
@@ -158,7 +165,7 @@ export const assetsRouter = createTRPCRouter({
         idEmpleadoAsignado: z.string().nullish(),
         idBoxAsignado: z.number().nullish(),
         nroSerieLocker: z.string().nullish(),
-        estado: z.enum(["Funcional", "Defectuoso", "Mantenimiento", "Perdido", "EOL", "Archivado"])
+        estado: z.number()
       })
     )
     .mutation(async ({ input }) => {
@@ -214,16 +221,6 @@ export const assetsRouter = createTRPCRouter({
     }),
   getLockersAndBoxes: publicProcedure
     .query(async () => {
-      // return [
-      //   {
-      //     locker: "LockerA",
-      //     boxes: [1, 2, 3]
-      //   },
-      //   {
-      //     locker: "LockerB",
-      //     boxes: [3, 5]
-      //   }
-      // ]
       const lockersAndBoxesResponse = await fetch(`${env.SERVER_URL}/api/AssetsGestion/AllBoxesDisp`,
         {
           method: "GET",
