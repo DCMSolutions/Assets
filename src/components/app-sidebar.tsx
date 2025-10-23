@@ -18,7 +18,7 @@ import {
 } from "./ui/select";
 import { setLang } from "~/app/actions";
 import { Languages } from "~/translations";
-import { Menu } from "lucide-react";
+import { Home, Menu } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "./ui/accordion";
 import Link from "next/link";
 
@@ -41,10 +41,17 @@ export function AppSidebar({ lang }: { lang?: string }) {
 
   return (
     <Sidebar className="text-white border-none mt-[50px]" collapsible="icon">
-      <SidebarHeader className="items-end">
-        <SidebarTrigger className="hover:text-black">
-          <Menu />
-        </SidebarTrigger>
+      <SidebarHeader className="h-16">
+        <div className="flex flex-row-reverse">
+          <SidebarTrigger className="hover:text-black">
+            <Menu />
+          </SidebarTrigger>
+        </div>
+        <div className="flex flex-row-reverse">
+          <a href="/" className="pr-0.5">
+            <Home />
+          </a>
+        </div>
       </SidebarHeader>
       <SidebarContent className="mt-2">
         <SidebarMenu >
