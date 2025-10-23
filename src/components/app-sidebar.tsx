@@ -40,13 +40,13 @@ export function AppSidebar({ lang }: { lang?: string }) {
   const t = useTranslations("HomePage");
 
   return (
-    <Sidebar className="text-white border-none" collapsible="icon">
+    <Sidebar className="text-white border-none mt-[50px]" collapsible="icon">
       <SidebarHeader className="items-end">
-        <SidebarTrigger>
-          <Menu className="text-white" />
+        <SidebarTrigger className="hover:text-black">
+          <Menu />
         </SidebarTrigger>
       </SidebarHeader>
-      <SidebarContent className="mt-[114px]">
+      <SidebarContent className="mt-2">
         <SidebarMenu >
           <SidebarMenuItem>
             <Accordion type="single" collapsible>
