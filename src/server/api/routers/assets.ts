@@ -10,7 +10,9 @@ export type AssetRaw = {
   modelo: string,
   poseedorActual: string | undefined,
   idCategoria: number,
+  categoria: string,
   idEmpleadoAsignado: string | undefined,
+  empleadoAsignado: string | undefined,
   idBoxAsignado: number | undefined,
   nroSerieLocker: string | undefined,
   estado: number
@@ -41,6 +43,29 @@ export const STATES = [
 
 export type AssetState = typeof STATES[keyof typeof STATES]
 
+export type AssetEventRaw = {
+  id: number;
+  idAsset: string;
+  idEmpleado: string;
+  nroSerieLocker: string;
+  evento: number;
+  estadoPrevio: number;
+  estadoNuevo: number | null;
+  fechaEvento: string;
+  asset: AssetRaw;
+  assetsEmpleado: any | null;
+}
+
+export type AssetEventForTable = Omit<AssetEventRaw, "evento"> & { evento: string }
+
+export const EVENTS = [
+  "Alta",
+  "Ingreso",
+  "Retiro",
+  "Asignación a Empleado",
+  "Asignación a Grupo",
+  "Cambio de Estado"
+]
 
 export const assetsRouter = createTRPCRouter({
   getAll: publicProcedure
@@ -236,6 +261,30 @@ export const assetsRouter = createTRPCRouter({
       const lockersAndBoxes = await lockersAndBoxesResponse.json()
       console.dir(lockersAndBoxes)
       return lockersAndBoxes
+    }),
+  history: publicProcedure
+    .query(async () => {
+      const historyResponse = await fetch(`${env.SERVER_URL}/api/AssetsHistorial`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${env.TOKEN_EMPRESA}`,
+          }
+        })
+      if (!historyResponse.ok) {
+        const error = await historyResponse.text()
+        console.log("Ocurrió un problema al pedir el historial de eventos de los activos con el siguiente mensaje de error:", error)
+      }
+      const history: AssetEventRaw[] = await historyResponse.json()
+
+      const historyForTable: AssetEventForTable[] = history.map(event => {
+        const { evento, ...rest } = event
+        return {
+          evento: EVENTS[evento]!,
+          ...rest
+        }
+      })
+      return historyForTable
     }),
   categories: categoriesRouter
 });

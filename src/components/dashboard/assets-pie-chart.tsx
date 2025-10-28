@@ -1,15 +1,16 @@
+"use client"
+
 import { PieChart, Pie, Cell, Legend, ResponsiveContainer } from "recharts";
 
-export default function AssetLocationChart() {
-  const data = [
-    { name: "STOCK", value: 30 },
-    { name: "LOCKER", value: 23 },
-    { name: "USUARIO", value: 34 },
-    { name: "REPARACIÓN", value: 4 },
-    { name: "EOL", value: 5 },
-  ];
+interface DataProp {
+  name: string,
+  value: number,
+  color: string
+}
 
-  const COLORS = ["#2563EB", "#F97316", "#9CA3AF", "#F59E0B", "#3B82F6"];
+export default function AssetLocationChart(
+  { data }: { data: DataProp[] }
+) {
 
   return (
     <div className="bg-white rounded-lg shadow-md p-4">
@@ -26,7 +27,7 @@ export default function AssetLocationChart() {
               label
             >
               {data.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                <Cell key={`cell-${index}`} fill={entry.color} />
               ))}
             </Pie>
             <Legend />

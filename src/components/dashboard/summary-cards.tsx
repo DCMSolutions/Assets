@@ -1,28 +1,17 @@
-import { api } from "~/trpc/server"
 
-export default async function SummaryCards() {
-  const assets = await api.assets.getAll.query()
-  const employees = await api.employees.getAll.query()
-  let assetsInLocker = 0
-  let assetsWithEmployee = 0
-  let assetsUnderMaintenance = 0
+interface Card {
+  title: string,
+  value: number,
+  color: string,
+  link: string
+}
 
-  assets.forEach(asset => {
-    if (asset.idBoxAsignado && !asset.poseedorActual) assetsInLocker++
-    if (asset.poseedorActual) assetsWithEmployee++
-    if (asset.estado === 2) assetsUnderMaintenance++
-  })
-  const cards = [
-    { title: "Activos", value: assets.length, color: "bg-[#39CCCC]", link: "/assets" },
-    { title: "En el locker", value: assetsInLocker, color: "bg-[#D81B60]", link: "/assets" },
-    { title: "En usuarios", value: assetsWithEmployee, color: "bg-[#FF851B]", link: "/assets" },
-    { title: "En reparación", value: assetsUnderMaintenance, color: "bg-[#605CA8]", link: "/assets" },
-    { title: "Usuarios", value: employees.length, color: "bg-[#3C8DBC]", link: "/employees" },
-  ];
-
+export default async function SummaryCards(
+  { cards }: { cards: Card[] }
+) {
   return (
     <div className="flex md:flex-wrap p-4 justify-between">
-      {cards.map((card) => (
+      {cards?.map((card) => (
         <a href={card.link} >
           <div
             key={card.title}

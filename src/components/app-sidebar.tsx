@@ -39,6 +39,46 @@ function Item({ text, url }: { text: string; url: string }) {
 export function AppSidebar({ lang }: { lang?: string }) {
   const t = useTranslations("HomePage");
 
+  const sidebarContent = [
+    {
+      title: "Personas",
+      links: [
+        {
+          name: "Empleados",
+          href: "/employees",
+        },
+        {
+          name: "Grupos",
+          href: "/employees/groups",
+        }
+      ]
+    },
+    {
+      title: "Ativos",
+      links: [
+        {
+          name: "Todos los activos",
+          href: "/assets",
+        },
+        {
+          name: "Categorías",
+          href: "/assets/categories",
+        }
+      ]
+    },
+    {
+      title: "Ajustes",
+      links: []
+    },
+    {
+      title: "Configuración",
+      links: []
+    },
+    {
+      title: "Monitor",
+      links: []
+    }
+  ]
   return (
     <Sidebar className="text-white border-none mt-[50px]" collapsible="icon">
       <SidebarHeader className="h-16">
@@ -54,67 +94,30 @@ export function AppSidebar({ lang }: { lang?: string }) {
         </div>
       </SidebarHeader>
       <SidebarContent className="mt-2">
-        <SidebarMenu >
-          <SidebarMenuItem>
-            <Accordion type="single" collapsible>
-              <AccordionItem value="people" className="p-0 border border-black pl-4">
-                <AccordionTrigger className=" text-lg hover:font-bold hover:no-underline">Personas</AccordionTrigger>
-                <AccordionContent className="pb-0">
-                  <SidebarMenuButton asChild >
-                    <Link href={"/employees"} className="bg-[#2C3B41] border-b border-black">
-                      <span className="text-base"> Empleados </span>
-                    </Link>
-                  </SidebarMenuButton>
-                  <SidebarMenuButton asChild>
-                    <Link href={"/employees/groups"} className="bg-[#2C3B41] ">
-                      <span className="text-base"> Grupos </span>
-                    </Link>
-                  </SidebarMenuButton>
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="assets" className="p-0 border border-black pl-4">
-                <AccordionTrigger className=" text-lg hover:font-bold hover:no-underline">Activos</AccordionTrigger>
-                <AccordionContent>
-                  <SidebarMenuButton asChild>
-                    <Link href={"/assets"} className="bg-[#2C3B41] ">
-                      <span className="text-base"> Activos </span>
-                    </Link>
-                  </SidebarMenuButton>
-                  <SidebarMenuButton asChild>
-                    <Link href={"/assets/categories"} className="bg-[#2C3B41] ">
-                      <span className="text-base"> Categorías </span>
-                    </Link>
-                  </SidebarMenuButton>
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="settings" className="p-0 border border-black pl-4">
-                <AccordionTrigger className=" text-lg hover:font-bold hover:no-underline">Ajustes</AccordionTrigger>
-                <AccordionContent>
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="config" className="p-0 border border-black pl-4">
-                <AccordionTrigger className=" text-lg hover:font-bold hover:no-underline">Configuración</AccordionTrigger>
-                <AccordionContent>
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="analytics" className="p-0 border border-black pl-4">
-                <AccordionTrigger className=" text-lg hover:font-bold hover:no-underline">Reportes</AccordionTrigger>
-                <AccordionContent>
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="permissions" className="p-0 border border-black pl-4">
-                <AccordionTrigger className=" text-lg hover:font-bold hover:no-underline">Permisos</AccordionTrigger>
-                <AccordionContent>
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="monitor" className="p-0 border border-black pl-4">
-                <AccordionTrigger className=" text-lg hover:font-bold hover:no-underline">Monitor</AccordionTrigger>
-                <AccordionContent>
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
-          </SidebarMenuItem>
-        </SidebarMenu>
+        <Accordion type="single" collapsible>
+          {
+            sidebarContent.map(element => {
+              return (
+                <AccordionItem value={element.title} className="pt-1 pb-1 border border-black pl-4">
+                  <AccordionTrigger className=" text-lg hover:font-bold hover:no-underline pb-1 pt-1">{element.title}</AccordionTrigger>
+                  <AccordionContent className="pb-0">
+                    {
+                      element.links.map(link => {
+                        return (
+                          <SidebarMenuButton asChild>
+                            <Link href={link.href} className="bg-[#2C3B41] ">
+                              <span className="text-base">{link.name}</span>
+                            </Link>
+                          </SidebarMenuButton>
+                        )
+                      })
+                    }
+                  </AccordionContent>
+                </AccordionItem>
+              )
+            })
+          }
+        </Accordion>
       </SidebarContent>
     </Sidebar>
   );

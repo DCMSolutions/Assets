@@ -26,7 +26,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
         <AppSidebar />
         <TopBar />
         <main className="flex-grow mt-[50px] bg-[#ECF0F5]">
-          <div className="pl-4">
+          <div className="p-4">
             {children}
           </div>
         </main>
