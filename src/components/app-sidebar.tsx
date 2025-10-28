@@ -54,7 +54,7 @@ export function AppSidebar({ lang }: { lang?: string }) {
       ]
     },
     {
-      title: "Ativos",
+      title: "Activos",
       links: [
         {
           name: "Todos los activos",
@@ -98,13 +98,13 @@ export function AppSidebar({ lang }: { lang?: string }) {
           {
             sidebarContent.map(element => {
               return (
-                <AccordionItem value={element.title} className="pt-1 pb-1 border border-black pl-4">
+                <AccordionItem key={element.title} value={element.title} className="pt-1 pb-1 border border-black pl-4">
                   <AccordionTrigger className=" text-lg hover:font-bold hover:no-underline pb-1 pt-1">{element.title}</AccordionTrigger>
                   <AccordionContent className="pb-0">
                     {
                       element.links.map(link => {
                         return (
-                          <SidebarMenuButton asChild>
+                          <SidebarMenuButton key={link.name} asChild>
                             <Link href={link.href} className="bg-[#2C3B41] ">
                               <span className="text-base">{link.name}</span>
                             </Link>

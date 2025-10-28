@@ -7,10 +7,10 @@ export default async function Page() {
 
   const assets = await api.assets.getAll.query()
   const employees = await api.employees.getAll.query()
-  let assetsInLocker = { value: 0, color: "#D81B60" }
-  let assetsWithEmployee = { value: 0, color: "#FF851B" }
-  let assetsUnderMaintenance = { value: 0, color: "#605CA8" }
-  let assetsEOL = { value: 0, color: "#A5A5A5" }
+  const assetsInLocker = { value: 0, color: "#D81B60" }
+  const assetsWithEmployee = { value: 0, color: "#FF851B" }
+  const assetsUnderMaintenance = { value: 0, color: "#605CA8" }
+  const assetsEOL = { value: 0, color: "#A5A5A5" }
 
   assets.forEach(asset => {
     if (asset.idBoxAsignado && !asset.poseedorActual) assetsInLocker.value++
@@ -20,11 +20,11 @@ export default async function Page() {
   })
 
   const cards = [
-    { title: "Activos", value: assets.length, color: "bg-[#39CCCC]", link: "/assets" },
-    { title: "En el locker", value: assetsInLocker.value, color: `bg-[${assetsInLocker.color}]`, link: "/assets" },
-    { title: "En usuarios", value: assetsWithEmployee.value, color: `bg-[${assetsWithEmployee.color}]`, link: "/assets" },
-    { title: "En reparación", value: assetsUnderMaintenance.value, color: `bg-[${assetsUnderMaintenance.color}]`, link: "/assets" },
-    { title: "Usuarios", value: employees.length, color: "bg-[#3C8DBC]", link: "/employees" },
+    { title: "Activos", value: assets.length, color: "#39CCCC", link: "/assets" },
+    { title: "En el locker", value: assetsInLocker.value, color: assetsInLocker.color, link: "/assets" },
+    { title: "En usuarios", value: assetsWithEmployee.value, color: assetsWithEmployee.color, link: "/assets" },
+    { title: "En reparación", value: assetsUnderMaintenance.value, color: assetsUnderMaintenance.color, link: "/assets" },
+    { title: "Usuarios", value: employees.length, color: "#3C8DBC", link: "/employees" },
   ]
 
   const data = [

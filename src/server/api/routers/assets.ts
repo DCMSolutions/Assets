@@ -100,7 +100,6 @@ export const assetsRouter = createTRPCRouter({
         const holderName = employees.find((e) => e.id === poseedorActual)?.nombre
         const ownerName = employees.find((e) => e.id === idEmpleadoAsignado)?.nombre
         const categoryName = categories!.find((c) => c.id === idCategoria.toString())!.nombre
-        console.log("SE CATEGORY", categoryName)
         const obj = {
           ...rest,
           idPoseedorActual: poseedorActual,
@@ -111,10 +110,9 @@ export const assetsRouter = createTRPCRouter({
           estado: STATES[estado]!,
           categoria: categoryName,
         }
-        console.log(obj)
         return obj
       })
-      console.log(assetsExtended)
+      // console.log(assetsExtended)
       return assetsExtended
     }),
   getById: publicProcedure
@@ -135,7 +133,7 @@ export const assetsRouter = createTRPCRouter({
         console.log(`Ocurrió un problema al intentar pedir un activo (${input.id}) con el siguiente mensaje de error:`, error)
       }
       const rawAsset: AssetRaw = await assetResponse.json()
-      console.log(rawAsset)
+      // console.log(rawAsset)
 
       const { idCategoria, idBoxAsignado, nroSerieLocker, estado, ...rest } = rawAsset
       const locker = nroSerieLocker ?? ""

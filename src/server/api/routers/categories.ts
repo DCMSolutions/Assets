@@ -42,7 +42,7 @@ export const categoriesRouter = createTRPCRouter({
           nombre: category.nombre
         }
       })
-      console.log(categoriesToReturn)
+      // console.log(categoriesToReturn)
       return categoriesToReturn
 
     }),
@@ -65,7 +65,7 @@ export const categoriesRouter = createTRPCRouter({
         return
       }
       const category: CategoryRaw = await categoryResponse.json()
-      console.log(category)
+      // console.log(category)
 
       const categoryToReturn: Category = {
         id: category.id.toString(),

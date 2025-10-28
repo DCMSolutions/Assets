@@ -1,5 +1,4 @@
 import { UserButton } from "@clerk/nextjs";
-import Image from "next/image";
 
 export default function TopBar() {
   return (
@@ -7,7 +6,7 @@ export default function TopBar() {
       <div className="fixed left-0 pl-2">
         <a
           href="/">
-          <Image
+          <img
             src="/dcm.png"
             alt="Assets logo"
             width="100"

@@ -46,7 +46,7 @@ export const employeesRouter = createTRPCRouter({
         })
       }
       const employees: EmployeeRaw[] = await employeesResponse.json()
-      console.log(employees)
+      // console.log(employees)
       return employees
 
     }),
@@ -85,7 +85,7 @@ export const employeesRouter = createTRPCRouter({
         })
       }
       const employee: EmployeeRaw = await employeeResponse.json()
-      console.log(employee)
+      // console.log(employee)
       return employee
 
     }),
