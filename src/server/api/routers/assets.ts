@@ -220,6 +220,18 @@ export const assetsRouter = createTRPCRouter({
           const error = await assignmentResponse.text()
           console.log(`Ocurrió un error asignándole un activo a un empleado al editar el activo ${input.id} con el siguiente mensaje de error:`, error)
         }
+      } else {
+        const assignmentResponse = await fetch(`${env.SERVER_URL}/api/AssetsEmpleado/unassignAsset/${input.idEmpleadoAsignado}/${input.id}`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${env.TOKEN_EMPRESA}`,
+            },
+          })
+        if (!assignmentResponse.ok) {
+          const error = await assignmentResponse.text()
+          console.log(`Ocurrió un error desasignándole un activo a un empleado al editar el activo ${input.id} con el siguiente mensaje de error:`, error)
+        }
       }
     }),
   delete: publicProcedure
