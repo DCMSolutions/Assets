@@ -85,7 +85,6 @@ export default function AssetForm({
   const [boxOptions, setBoxOptions] = useState<{ value: string, label: string }[]>([]);
   const [boxDisabled, setBoxDisabled] = useState<boolean>(asset.nroSerieLocker ? false : true);
 
-  const STATES = stateOptions.map(option => option.label)
   const router = useRouter();
 
   const lockerOptions = lockersAndBoxes.map(item => {
@@ -94,6 +93,9 @@ export default function AssetForm({
 
   const boxesAsOptionsByLocker = (locker: string) => {
     const boxes = lockersAndBoxes.find(item => item.nroSerieLocker === locker)?.boxes
+    if (!boxes) {
+      return []
+    }
     const boxesAsOptions = boxes!.map(box => {
       return { value: box.toString(), label: box.toString() }
     })

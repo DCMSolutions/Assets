@@ -207,6 +207,21 @@ export const assetsRouter = createTRPCRouter({
         const error = await editResponse.text()
         console.log(`Ocurrió un problema al intentar editar un activo (${input}) con el siguiente mensaje de error:`, error)
       }
+
+      if (!input.idEmpleadoAsignado) {
+        const assignmentResponse = await fetch(`${env.SERVER_URL}/api/AssetsEmpleado/assignAsset/${input.idEmpleadoAsignado}/${input.id}`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${env.TOKEN_EMPRESA}`,
+              "Content-Type": "application/json",
+            },
+          })
+        if (!assignmentResponse.ok) {
+          const error = await assignmentResponse.text()
+          console.log(`Ocurrió un error asignándole un activo a un empleado al editar el activo ${input.id} con el siguiente mensaje de error:`, error)
+        }
+      }
     }),
   delete: publicProcedure
     .input(
