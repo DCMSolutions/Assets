@@ -26,7 +26,7 @@ import { AddCategoryDialog } from "./add-category-dialog";
 interface AddAssetDialogProps {
   categoryOptions: CategoryOption[],
   employeeOptions: EmployeeOption[],
-  stateOptions: { value: string, label: AssetState }[],
+  stateOptions: { value: string, label: string }[],
   lockersAndBoxes: { nroSerieLocker: string, boxes: number[] }[]
 }
 
@@ -46,7 +46,7 @@ export function AddAssetDialog({
   const [idEmpleadoAsignado, setIdEmpleadoAsignado] = useState<string>("");
   const [idBoxAsignado, setIdBoxAsignado] = useState<string>("");
   const [nroSerieLocker, setNroSerieLocker] = useState<string>("");
-  const [estado, setEstado] = useState<AssetState>("Funcional");
+  const [estado, setEstado] = useState<string>("0");
 
   const [open, setOpen] = useState(false);
 
@@ -97,7 +97,7 @@ export function AddAssetDialog({
         idEmpleadoAsignado: employee,
         idBoxAsignado: box,
         nroSerieLocker: locker,
-        estado: parseInt(estado as string)
+        estado: parseInt(estado)
       });
 
       toast.success("Activo agregado correctamente");
@@ -193,7 +193,7 @@ export function AddAssetDialog({
             <Selector
               options={stateOptions}
               value={estado}
-              onChange={state => setEstado(state as AssetState)}
+              onChange={state => setEstado(state)}
               required
             />
 

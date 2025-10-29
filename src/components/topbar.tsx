@@ -7,9 +7,9 @@ export default function TopBar() {
         <a
           href="/">
           <img
-            src="/dcm.png"
+            src="/assets.png"
             alt="Assets logo"
-            width="100"
+            width="200"
             height="48"
             sizes="207px"
           />

@@ -104,7 +104,10 @@ export const groupsRouter = createTRPCRouter({
         })
 
       }
-      const group: GroupRaw = await groupResponse.json()
+      const rawGroup: GroupRaw = await groupResponse.json()
+      const { id, ...rest } = rawGroup
+      const group: Group = { id: id.toString(), ...rest }
+
       console.log(group)
       return group
 

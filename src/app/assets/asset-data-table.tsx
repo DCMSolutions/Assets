@@ -22,14 +22,14 @@ import {
 } from "~/components/ui/newTable";
 import TableToolbar from "~/components/tanstack/table-toolbar";
 import { DataTablePagination } from "~/components/tanstack/pagination";
-import { AssetExtended } from "~/server/api/routers/assets";
+import { AssetForTable } from "~/server/api/routers/assets";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
 }
 
-export function AssetsDataTable<TData extends AssetExtended>({
+export function AssetsDataTable<TData extends AssetForTable>({
   columns,
   data,
 }: DataTableProps<TData, unknown>) {

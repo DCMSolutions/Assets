@@ -1,7 +1,6 @@
 import { TRPCReactProvider } from "~/trpc/react";
 import { cookies } from "next/headers";
 import { getServerAuthSession } from "~/server/auth";
-import LayoutContainer from "~/components/layout-container";
 
 export default async function RootLayout(props: { children: React.ReactNode }) {
   const session = await getServerAuthSession();
@@ -10,7 +9,7 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
       <body>
         <div className="mb-10 flex justify-center">
           <TRPCReactProvider cookies={cookies().toString()}>
-            <LayoutContainer>{props.children}</LayoutContainer>
+            {props.children}
           </TRPCReactProvider>
         </div>
         <div></div>
