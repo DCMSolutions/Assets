@@ -1,7 +1,58 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
- 
+
+
+@page {
+  size: auto;
+  margin: 0;
+}
+
+@media print {
+  /* Oculta todo excepto el contenido marcado */
+  body *:not(.print-visible):not(.print-visible *) {
+    display: none !important;
+  }
+
+  /* Resetea el body */
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    height: 100% !important;
+    width: 100% !important;
+    background: white !important;
+  }
+
+  /* Área que sí se imprime */
+  .print-visible {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    height: 100vh !important;
+    width: 100vw !important;
+    background: white !important;
+    transform: none !important;
+    position: static !important;
+    overflow: visible !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* El QR en sí */
+  .print-visible canvas {
+    display: block;
+    max-width: 80vw !important;
+    max-height: 80vh !important;
+    object-fit: contain;
+  }
+
+  /* Evita sombras o bordes */
+  .print-visible * {
+    box-shadow: none !important;
+    border: none !important;
+  }
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;

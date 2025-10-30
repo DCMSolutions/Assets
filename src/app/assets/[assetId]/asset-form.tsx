@@ -4,6 +4,7 @@ import { CheckIcon, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { MouseEventHandler, useEffect, useState } from "react";
 import { toast } from "sonner";
+import { PrintQRDialog } from "~/components/print-qr-dialog";
 import Selector from "~/components/selector";
 import { Title } from "~/components/title";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "~/components/ui/alert-dialog";
@@ -150,7 +151,10 @@ export default function AssetForm({
   return (
     <section className="pl-4 space-y-2">
       <div className="flex justify-between mr-4">
-        <Title>Modificar activo</Title>
+        <div>
+          <Title>Modificar activo</Title>
+          <PrintQRDialog value={asset.id} label={asset.id} />
+        </div>
         <Button disabled={loadingEdition} onClick={handleEdit}>
           {(loadingEdition || loadingAssignment || loadingUnassignment) ? (
             <Loader2 className="mr-2 animate-spin" />
