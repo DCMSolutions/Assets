@@ -73,6 +73,8 @@ export default function AssetForm({
   lockersAndBoxes
 }: AssetFormProps) {
   const { mutateAsync: editAsset, isLoading: loadingEdition } = api.assets.edit.useMutation();
+  const { mutateAsync: assignToEmployee, isLoading: loadingAssignment } = api.assets.assignToEmployee.useMutation();
+  const { mutateAsync: unassignToEmployee, isLoading: loadingUnassignment } = api.assets.unassignToEmployee.useMutation();
 
   const [id, _] = useState<string>(asset.id);
   const [modelo, setModelo] = useState<string>(asset.modelo);
@@ -112,16 +114,30 @@ export default function AssetForm({
   }, [])
 
   async function handleEdit() {
+    const box = idBoxAsignado
+      ? parseInt(idBoxAsignado)
+      : null
     try {
       await editAsset({
         id,
         modelo,
         idCategoria: parseInt(idCategoria!),
-        idEmpleadoAsignado: idEmpleadoAsignado!,
-        idBoxAsignado: parseInt(idBoxAsignado!),
+        idEmpleadoAsignado,
+        idBoxAsignado: box,
         nroSerieLocker,
         estado: parseInt(estado!)
       });
+
+      if (asset.idEmpleadoAsignado) {
+        if (!idEmpleadoAsignado || (idEmpleadoAsignado && (idEmpleadoAsignado !== asset.idEmpleadoAsignado))) {
+          await unassignToEmployee({ asset: asset.id, employee: asset.idEmpleadoAsignado })
+        }
+      }
+      if (idEmpleadoAsignado) {
+        if (!asset.idEmpleadoAsignado || (asset.idEmpleadoAsignado && (asset.idEmpleadoAsignado !== idEmpleadoAsignado))) {
+          await assignToEmployee({ asset: asset.id, employee: idEmpleadoAsignado })
+        }
+      }
 
       toast.success("Activo modificado correctamente");
       router.refresh();
@@ -136,7 +152,7 @@ export default function AssetForm({
       <div className="flex justify-between mr-4">
         <Title>Modificar activo</Title>
         <Button disabled={loadingEdition} onClick={handleEdit}>
-          {loadingEdition ? (
+          {(loadingEdition || loadingAssignment || loadingUnassignment) ? (
             <Loader2 className="mr-2 animate-spin" />
           ) : (
             <CheckIcon className="mr-2" />

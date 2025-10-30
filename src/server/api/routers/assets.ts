@@ -207,32 +207,44 @@ export const assetsRouter = createTRPCRouter({
         const error = await editResponse.text()
         console.log(`Ocurrió un problema al intentar editar un activo (${input}) con el siguiente mensaje de error:`, error)
       }
-
-      if (input.idEmpleadoAsignado) {
-        const assignmentResponse = await fetch(`${env.SERVER_URL}/api/AssetsEmpleado/assignAsset/${input.idEmpleadoAsignado}/${input.id}`,
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${env.TOKEN_EMPRESA}`,
-            },
-          })
-        if (!assignmentResponse.ok) {
-          const error = await assignmentResponse.text()
-          console.log(`Ocurrió un error asignándole un activo a un empleado al editar el activo ${input.id} con el siguiente mensaje de error:`, error)
-        }
-      } else {
-        const assignmentResponse = await fetch(`${env.SERVER_URL}/api/AssetsEmpleado/unassignAsset/${input.idEmpleadoAsignado}/${input.id}`,
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${env.TOKEN_EMPRESA}`,
-            },
-          })
-        if (!assignmentResponse.ok) {
-          const error = await assignmentResponse.text()
-          console.log(`Ocurrió un error desasignándole un activo a un empleado al editar el activo ${input.id} con el siguiente mensaje de error:`, error)
-        }
+    }),
+  assignToEmployee: publicProcedure
+    .input(z.object({
+      asset: z.string(),
+      employee: z.string()
+    }))
+    .mutation(async ({ input }) => {
+      const assignmentResponse = await fetch(`${env.SERVER_URL}/api/AssetsEmpleado/assignAsset/${input.employee}/${input.asset}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${env.TOKEN_EMPRESA}`,
+          },
+        })
+      if (!assignmentResponse.ok) {
+        const error = await assignmentResponse.text()
+        console.log(`Ocurrió un error asignándole un activo (${input.asset}) a un empleado (${input.employee}) con el siguiente mensaje de error:`, error)
       }
+
+    }),
+  unassignToEmployee: publicProcedure
+    .input(z.object({
+      asset: z.string(),
+      employee: z.string()
+    }))
+    .mutation(async ({ input }) => {
+      const unassignmentResponse = await fetch(`${env.SERVER_URL}/api/AssetsEmpleado/unassignAsset/${input.employee}/${input.asset}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${env.TOKEN_EMPRESA}`,
+          },
+        })
+      if (!unassignmentResponse.ok) {
+        const error = await unassignmentResponse.text()
+        console.log(`Ocurrió un error desasignándole un activo (${input.asset}) a un empleado (${input.employee}) con el siguiente mensaje de error:`, error)
+      }
+
     }),
   delete: publicProcedure
     .input(
