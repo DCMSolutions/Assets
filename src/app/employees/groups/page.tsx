@@ -9,7 +9,7 @@ export default async function Groups() {
   const groups = await api.employees.groups.getAll.query()
 
   return (
-    <section>
+    <section className="flex-grow">
       <div className="flex pl-4 justify-between">
         <Title>Groups</Title>
         <AddGroupDialog />

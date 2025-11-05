@@ -67,31 +67,50 @@ export const EVENTS = [
   "Cambio de Estado"
 ]
 
+async function getAssets() {
+  const assetsResponse = await fetch(`${env.SERVER_URL}/api/Asset`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${env.TOKEN_EMPRESA}`,
+      }
+    })
+
+  if (!assetsResponse.ok) {
+    const error = await assetsResponse.text()
+    console.log("Ocurrió un problema al pedir todos los activos con el siguiente mensaje de error:", error)
+  }
+  const assets: AssetRaw[] = await assetsResponse.json()
+  // console.log("Todos los activos actuales:", assets)
+  return assets
+
+}
+
 export const assetsRouter = createTRPCRouter({
   getAll: publicProcedure
     .query(async () => {
 
-      const assetsResponse = await fetch(`${env.SERVER_URL}/api/Asset`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${env.TOKEN_EMPRESA}`,
-          }
-        })
+      const assets = await getAssets()
 
-      if (!assetsResponse.ok) {
-        const error = await assetsResponse.text()
-        console.log("Ocurrió un problema al pedir todos los activos con el siguiente mensaje de error:", error)
-      }
-      const assets: AssetRaw[] = await assetsResponse.json()
-      // console.log("Todos los activos actuales:", assets)
       return assets
 
+    }),
+  getAllAsOptions: publicProcedure
+    .query(async () => {
+
+      const assets = await getAssets()
+
+      const assetsAsOptions = assets.map(asset => {
+        const { id } = asset
+        return { value: id, label: id }
+      })
+
+      return assetsAsOptions
     }),
   getAllForTable: publicProcedure
     .query(async () => {
 
-      const assets = await api.assets.getAll.query()
+      const assets = await getAssets()
       const categories = await api.assets.categories.getAll.query()
       const employees = await api.employees.getAll.query()
 

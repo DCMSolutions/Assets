@@ -10,6 +10,9 @@ import AppLayout from "~/components/applayout";
 import { NextIntlClientProvider } from "next-intl";
 import { Suspense } from "react";
 import Loading from "./loading";
+import { SidebarProvider } from "~/components/ui/sidebar";
+import TopBar from "~/components/topbar";
+import { AppSidebar } from "~/components/app-sidebar";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -28,21 +31,22 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // Obtenemos cookies del lado servidor y se las pasamos al provider de tRPC
   const cookieString = cookies().toString();
 
   return (
     <html lang="es">
-      <body className={`${inter.variable} font-sans antialiased`}>
+      <body className={`${inter.variable} font-sans antialiased bg-[#ECF0F5]`}>
         <NextIntlClientProvider>
           <ClerkProvider>
             <TRPCReactProvider cookies={cookieString}>
               <ErrorBoundary>
-                <AppLayout>
-                  <Suspense fallback={<Loading />} >
+                <SidebarProvider>
+                  <AppSidebar />
+                  <TopBar />
+                  <main className="flex flex-grow mt-[50px] p-4">
                     {children}
-                  </Suspense>
-                </AppLayout>
+                  </main>
+                </SidebarProvider>
               </ErrorBoundary>
             </TRPCReactProvider>
           </ClerkProvider>

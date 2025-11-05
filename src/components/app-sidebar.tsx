@@ -80,20 +80,20 @@ export function AppSidebar({ lang }: { lang?: string }) {
     }
   ]
   return (
-    <Sidebar className="text-white border-none mt-[50px]" collapsible="icon">
-      <SidebarHeader className="h-16">
+    <Sidebar className="text-white h-full z-10 border-none" collapsible="icon">
+      <SidebarHeader className="h-16 mb-4">
         <div className="flex flex-row-reverse">
           <SidebarTrigger className="hover:text-black">
-            <Menu />
+            <Menu className="size-20" />
           </SidebarTrigger>
         </div>
-        <div className="flex flex-row-reverse">
-          <a href="/" className="pr-0.5">
-            <Home />
+        <div className="mt-4">
+          <a href="/" >
+            <span className="text-lg bg-[#1E282C]">Panel de Control</span>
           </a>
         </div>
       </SidebarHeader>
-      <SidebarContent className="mt-2">
+      <SidebarContent className="mt-4">
         <Accordion type="single" collapsible>
           {
             sidebarContent.map(element => {

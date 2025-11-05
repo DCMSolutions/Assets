@@ -149,7 +149,7 @@ export default function AssetForm({
   }
 
   return (
-    <section className="pl-4 space-y-2">
+    <section className="flex-grow pl-4 space-y-2">
       <div className="flex justify-between mr-4">
         <div>
           <Title>Modificar activo</Title>

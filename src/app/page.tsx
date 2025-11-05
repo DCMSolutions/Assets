@@ -9,12 +9,14 @@ export default async function Page() {
   const employees = await api.employees.getAll.query()
   const assetsInLocker = { value: 0, color: "#D81B60" }
   const assetsWithEmployee = { value: 0, color: "#FF851B" }
+  const assetsDefective = { value: 0, color: "#2a4a6b" }
   const assetsUnderMaintenance = { value: 0, color: "#605CA8" }
   const assetsEOL = { value: 0, color: "#A5A5A5" }
 
   assets.forEach(asset => {
     if (asset.idBoxAsignado && !asset.poseedorActual) assetsInLocker.value++
     if (asset.poseedorActual) assetsWithEmployee.value++
+    if (asset.estado === 1) assetsDefective.value++
     if (asset.estado === 2) assetsUnderMaintenance.value++
     if (asset.estado === 4) assetsEOL.value++
   })
@@ -23,6 +25,7 @@ export default async function Page() {
     { title: "Activos", value: assets.length, color: "#39CCCC", link: "/assets" },
     { title: "En el locker", value: assetsInLocker.value, color: assetsInLocker.color, link: "/assets" },
     { title: "En usuarios", value: assetsWithEmployee.value, color: assetsWithEmployee.color, link: "/assets" },
+    { title: "Defectuosos", value: assetsDefective.value, color: assetsDefective.color, link: "/assets" },
     { title: "En reparación", value: assetsUnderMaintenance.value, color: assetsUnderMaintenance.color, link: "/assets" },
     { title: "Usuarios", value: employees.length, color: "#3C8DBC", link: "/employees" },
   ]
@@ -35,7 +38,7 @@ export default async function Page() {
   ];
 
   return (
-    <section className="p-4 ">
+    <div className="w-full">
       <h1 className="text-3xl font-semibold">Panel principal</h1>
       <SummaryCards cards={cards} />
       <div className="grid grid-rows-2 grid-cols-3 gap-4 mt-6">
@@ -46,6 +49,6 @@ export default async function Page() {
           <AssetLocationChart data={data} />
         </div>
       </div>
-    </section >
+    </div>
   );
 }

@@ -9,7 +9,7 @@ export default async function Employees() {
   const employees = await api.employees.getAllForTable.query()
 
   return (
-    <section>
+    <section className="flex-grow">
       <div className="flex pl-4 justify-between">
         <Title>Empleados</Title>
         <AddEmployeeDialog />

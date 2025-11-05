@@ -13,7 +13,7 @@ export default async function Assets() {
   const lockersAndBoxes = await api.assets.getLockersAndBoxes.query()
 
   return (
-    <>
+    <div className="flex-grow">
       <div className="flex pl-4 justify-between">
         <Title>Activos</Title>
         <AddAssetDialog
@@ -26,6 +26,6 @@ export default async function Assets() {
       <div>
         <AssetsDataTable columns={assetsTableColumns} data={assets!} />
       </div>
-    </>
+    </div>
   );
 }

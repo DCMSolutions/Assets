@@ -9,7 +9,7 @@ export default async function Categories() {
   const categories = await api.assets.categories.getAll.query()
 
   return (
-    <section>
+    <section className="flex-grow">
       <div className="flex pl-4 justify-between">
         <Title>Categorías</Title>
         <AddCategoryDialog />
