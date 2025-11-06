@@ -22,37 +22,11 @@ import { Home, Menu } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "./ui/accordion";
 import Link from "next/link";
 
-function Item({ text, url }: { text: string; url: string }) {
-  return (
-    <ul className="main-nav ">
-      <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-home current-menu-item page_item page-item-11 current_page_item menu-item-27 first depth-0">
-        <a href={url} data-level="1">
-          <span className="menu-item-text">
-            <span className="menu-text">{text}</span>
-          </span>
-        </a>
-      </li>
-    </ul>
-  );
-}
 
 export function AppSidebar({ lang }: { lang?: string }) {
   const t = useTranslations("HomePage");
 
   const sidebarContent = [
-    {
-      title: "Personas",
-      links: [
-        {
-          name: "Empleados",
-          href: "/employees",
-        },
-        {
-          name: "Grupos",
-          href: "/employees/groups",
-        }
-      ]
-    },
     {
       title: "Activos",
       links: [
@@ -61,22 +35,140 @@ export function AppSidebar({ lang }: { lang?: string }) {
           href: "/assets",
         },
         {
-          name: "Categorías",
-          href: "/assets/categories",
+          name: "Asignados",
+          href: "/assets",
+        },
+        {
+          name: "En el locker",
+          href: "/assets",
+        },
+        {
+          name: "En usuarios",
+          href: "/assets",
+        },
+        {
+          name: "En reparación",
+          href: "/assets",
+        },
+      ]
+    },
+    {
+      title: "Usuarios",
+      links: [
+        {
+          name: "Todos los usuarios",
+          href: "/employees",
+        },
+        {
+          name: "Súper Administradores",
+          href: "/employees",
+        },
+        {
+          name: "Administradores",
+          href: "/employees",
+        },
+        {
+          name: "Usuarios",
+          href: "/employees",
+        },
+        {
+          name: "Habilitados",
+          href: "/employees",
+        },
+        {
+          name: "Grupos de usuarios",
+          href: "/employees/groups",
         }
       ]
     },
     {
       title: "Ajustes",
-      links: []
+      links: [
+        {
+          name: "Modelos de activos",
+          href: "/",
+        },
+        {
+          name: "Categorías de activos",
+          href: "/",
+        },
+        {
+          name: "Marcas de activos",
+          href: "/",
+        },
+        {
+          name: "Proveedores de activos",
+          href: "/",
+        },
+        {
+          name: "Departamentos",
+          href: "/",
+        },
+        {
+          name: "Empresas",
+          href: "/",
+        },
+        {
+          name: "Locaciones",
+          href: "/",
+        },
+      ]
     },
     {
       title: "Configuración",
-      links: []
+      links: [
+        {
+          name: "Configuración general",
+          href: "/",
+        },
+        {
+          name: "Notificaciones",
+          href: "/",
+        },
+      ]
+    },
+    {
+      title: "Reportes",
+      links: [
+        {
+          name: "Actividad",
+          href: "/",
+        },
+        {
+          name: "Ocupación por día",
+          href: "/",
+        },
+        {
+          name: "Log de accesos",
+          href: "/",
+        },
+        {
+          name: "Activos en reparación",
+          href: "/",
+        },
+      ]
+    },
+    {
+      title: "Permisos",
+      links: [
+        {
+          name: "Permisos",
+          href: "/",
+        },
+        {
+          name: "Roles",
+          href: "/",
+        },
+      ]
     },
     {
       title: "Monitor",
-      links: []
+      links: [
+        {
+          name: "Monitor de lockers",
+          href: "/monitor",
+        },
+      ]
     }
   ]
   return (
@@ -98,7 +190,7 @@ export function AppSidebar({ lang }: { lang?: string }) {
           {
             sidebarContent.map(element => {
               return (
-                <AccordionItem key={element.title} value={element.title} className="pt-1 pb-1 border border-black pl-4">
+                <AccordionItem key={element.title} value={element.title} className="pt-1 pb-1 border border-black pl-1">
                   <AccordionTrigger className=" text-lg hover:font-bold hover:no-underline pb-1 pt-1">{element.title}</AccordionTrigger>
                   <AccordionContent className="pb-0">
                     {
