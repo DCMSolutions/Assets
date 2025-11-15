@@ -10,7 +10,7 @@ import { AppSidebar } from "~/components/app-sidebar";
 
 // ⬇️ importa el provider del sidebar de tu lib (shadcn/ui)
 import { SidebarProvider } from "~/components/ui/sidebar";
-import TopBar from "./topbar";
+import TopBar from "./layout/topbar";
 // ^ ajustá la ruta según tu proyecto: a veces es "@/components/ui/sidebar"
 
 export type AppLayoutProps = {

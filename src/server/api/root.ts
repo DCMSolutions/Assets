@@ -35,7 +35,7 @@ export const appRouter = createTRPCRouter({
   city: cityRouter,
   store: storeRouter,
   size: sizeRouter,
-  locker: lockerRouter,
+  lockers: lockerRouter,
   config: configRouter,
   fee: feeRouter,
   coin: coinRouter,

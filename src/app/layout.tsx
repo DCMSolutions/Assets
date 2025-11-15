@@ -6,13 +6,10 @@ import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import { TRPCReactProvider } from "~/trpc/react";
 import ErrorBoundary from "~/components/ErrorBoundary";
-import AppLayout from "~/components/applayout";
 import { NextIntlClientProvider } from "next-intl";
-import { Suspense } from "react";
-import Loading from "./loading";
 import { SidebarProvider } from "~/components/ui/sidebar";
-import TopBar from "~/components/topbar";
-import { AppSidebar } from "~/components/app-sidebar";
+import TopBar from "~/components/layout/topbar";
+import { AppSidebar } from "~/components/layout/app-sidebar";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -43,7 +40,7 @@ export default function RootLayout({
                 <SidebarProvider>
                   <AppSidebar />
                   <TopBar />
-                  <main className="flex flex-grow mt-[50px] p-4">
+                  <main className="flex-grow mt-[50px] p-4">
                     {children}
                   </main>
                 </SidebarProvider>

@@ -31,27 +31,32 @@ export type GroupOption = {
   label: string,
 }
 
+export async function getEmployeeGroups() {
+  const groupsResponse = await fetch(`${env.SERVER_URL}/api/AssetsGrupoEmpleados`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${env.TOKEN_EMPRESA}`,
+      }
+    })
+
+  if (!groupsResponse.ok) {
+    const error = await groupsResponse.text()
+    console.log("Ocurrió un problema pidiendo la lista completa de grupos de empleados con el siguiente mensaje de error:", error)
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: ERROR_MESSAGES.GENERIC_INTERNAL_ERROR
+    })
+  }
+  const rawGroups: GroupRaw[] = await groupsResponse.json()
+  return rawGroups
+}
+
 export const groupsRouter = createTRPCRouter({
   getAll: publicProcedure
     .query(async () => {
 
-      const groupsResponse = await fetch(`${env.SERVER_URL}/api/AssetsGrupoEmpleados`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${env.TOKEN_EMPRESA}`,
-          }
-        })
-
-      if (!groupsResponse.ok) {
-        const error = await groupsResponse.text()
-        console.log("Ocurrió un problema pidiendo la lista completa de grupos de empleados con el siguiente mensaje de error:", error)
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: ERROR_MESSAGES.GENERIC_INTERNAL_ERROR
-        })
-      }
-      const rawGroups: GroupRaw[] = await groupsResponse.json()
+      const rawGroups = await getEmployeeGroups()
       const groups: Group[] = rawGroups.map(g => {
         const { id, ...rest } = g
         return {
@@ -62,6 +67,18 @@ export const groupsRouter = createTRPCRouter({
       console.log(groups)
       return groups
 
+    }),
+  getAllAsOptions: publicProcedure
+    .query(async () => {
+      const groups = await getEmployeeGroups()
+      const groupsAsOptions = groups.map(group => {
+        const { id, nombre } = group
+        return {
+          value: id.toString(),
+          label: nombre
+        } as GroupOption
+      })
+      return groupsAsOptions
     }),
   getAllForTable: publicProcedure
     .query(async () => {

@@ -14,7 +14,7 @@ export const employeesTableColumns: ColumnDef<EmployeeForTable>[] = [
   },
   {
     accessorKey: "nombre",
-    header: "Nombre",
+    header: "Apellido, Nombre",
     cell: ({ row }) => (
       <div className="text-center">{row.getValue("nombre") || "-"}</div>
     ),

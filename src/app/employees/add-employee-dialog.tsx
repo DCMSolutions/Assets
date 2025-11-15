@@ -22,7 +22,7 @@ import { api } from "~/trpc/react";
 export function AddEmployeeDialog() {
   const { mutateAsync: createEmployee, isLoading } = api.employees.create.useMutation();
 
-  const [rfid, setRfid] = useState<string>("");
+  const [id, setId] = useState<string>("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -36,7 +36,7 @@ export function AddEmployeeDialog() {
   async function handleCreate() {
     try {
       await createEmployee({
-        id: rfid,
+        id,
         nombre: lastName + ", " + firstName,
         mail: email,
         habilitado: active
@@ -60,14 +60,14 @@ export function AddEmployeeDialog() {
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>Agregar Empleado</DialogTitle>
+            <DialogTitle>Agregar Usuario</DialogTitle>
           </DialogHeader>
 
           <Input
-            id="rfid"
-            placeholder="RFID"
-            value={rfid}
-            onChange={(e) => setRfid(e.target.value)}
+            id="id"
+            placeholder="UID"
+            value={id}
+            onChange={(e) => setId(e.target.value)}
           />
           <Input
             id="firstName"

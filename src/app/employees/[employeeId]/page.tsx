@@ -12,10 +12,18 @@ export default async function EmployeePage(props: { params: { employeeId: string
   // }
 
   const employee: Employee = await api.employees.getById.query({ id: props.params.employeeId });
+  const groups = await api.employees.groups.getAllAsOptions.query()
 
   if (!employee) {
     return <Title>Este empleado ya no existe</Title>;
   }
 
-  return <EmployeeForm employee={employee} />;
+  return (
+    <>
+      <div>
+        <Title>Editar usuario</Title>
+      </div>
+      <EmployeeForm employee={employee} groupsAsOptions={groups} />;
+    </>
+  )
 }

@@ -3,13 +3,16 @@
 import { UserButton } from "@clerk/nextjs";
 import { Barcode, Users } from "lucide-react";
 import { useSidebar } from "~/components/ui/sidebar";
-import { SearchBox } from "./searchbox";
+import { SearchBox } from "../searchbox";
 import { api } from "~/trpc/react";
+import AboutDialog from "./about-dialog";
 
 export default function TopBar() {
   const { state } = useSidebar();
 
-  const { data: assetsOptions, isLoading } = api.assets.getAllAsOptions.useQuery()
+  const { data: assetsOptions, isLoading } = api.assets.getAllAsOptions.useQuery(undefined, {
+    refetchOnWindowFocus: false
+  })
 
   return (
     <header
@@ -42,7 +45,10 @@ export default function TopBar() {
         </div>
       </div>
 
-      <UserButton afterSwitchSessionUrl="/" />
+      <div className="flex space-x-4">
+        <UserButton afterSwitchSessionUrl="/" />
+        <AboutDialog />
+      </div>
     </header>
   );
 }

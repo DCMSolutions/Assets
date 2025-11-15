@@ -31,19 +31,19 @@ import {
   TableHeader,
   TableRow,
 } from "~/components/ui/table";
-import { Box, Boxes, Locker } from "~/server/api/routers/lockers";
+import { Box } from "~/server/api/routers/lockers";
 import { AlertCircle, BriefcaseIcon, LockIcon, UnlockIcon } from "lucide-react";
 import { useState, useEffect } from "react";
 
-interface MonitorProps {
+interface BoxesTableProps {
   boxes: Box[],
-  columns: ColumnDef<Boxes>[]
+  columns: ColumnDef<Box>[]
 }
 
-export function MonitorTable({
+export function BoxesTable({
   boxes,
   columns
-}: MonitorProps) {
+}: BoxesTableProps) {
 
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);

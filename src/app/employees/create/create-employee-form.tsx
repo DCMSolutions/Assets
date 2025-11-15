@@ -1,46 +1,30 @@
-"use client";
+"use client"
 
-import { CheckIcon, Loader2 } from "lucide-react";
-import { MouseEventHandler, useState } from "react";
-import { Title } from "~/components/title";
-import { Button } from "~/components/ui/button";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { toast } from "sonner";
+import AcceptButton from "~/components/accept-button";
+import MultiSelect from "~/components/ui/multiselect";
+import { Card } from "~/components/ui/card";
+import { Checkbox } from "~/components/ui/checkbox";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
-import { api } from "~/trpc/react";
-import { Card } from "~/components/ui/card";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "~/components/ui/alert-dialog";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
-import { Checkbox } from "~/components/ui/checkbox";
-import { Employee } from "~/server/api/routers/employees";
-import MultiSelect from "~/components/ui/multiselect";
 import { GroupOption } from "~/server/api/routers/groups";
-import AcceptButton from "~/components/accept-button";
+import { api } from "~/trpc/react";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "~/components/ui/accordion";
 
-interface EmployeeFormProps {
-  employee: Employee,
+interface CreateEmployeeProps {
   groupsAsOptions: GroupOption[]
 }
-
-export default function EmployeeForm({
-  employee,
+export default function CreateEmployeeForm({
   groupsAsOptions
-}: EmployeeFormProps) {
-  const [id, _] = useState<string>(employee?.id!);
-  const [firstName, setFirstName] = useState(employee.nombre.split(", ")[1]);
-  const [lastName, setLastName] = useState(employee.nombre.split(", ")[0]);
-  const [email, setEmail] = useState(employee?.mail!);
-  const [phone, setPhone] = useState<string>(employee?.telefono ?? "");
-  const [active, setActive] = useState<boolean>(employee?.habilitado!);
+}: CreateEmployeeProps) {
+  const [id, setId] = useState<string>();
+  const [firstName, setFirstName] = useState<string>();
+  const [lastName, setLastName] = useState<string>();
+  const [email, setEmail] = useState<string>();
+  const [phone, setPhone] = useState<string>();
+  const [active, setActive] = useState<boolean>(true);
 
   const [selectedGroups, setSelectedGroups] = useState<string[]>([])
 
@@ -54,7 +38,7 @@ export default function EmployeeForm({
   async function handleChange() {
     try {
       await editEmployee({
-        id,
+        id: id!,
         nombre: `${lastName}, ${firstName}`,
         mail: email,
         habilitado: active
@@ -75,6 +59,7 @@ export default function EmployeeForm({
             id="rfid"
             placeholder="UID"
             value={id}
+            onChange={(e) => setId(e.target.value)}
           />
         </div>
 
@@ -170,51 +155,10 @@ export default function EmployeeForm({
 
         <div className="flex justify-end">
           <AcceptButton isLoading={isLoading} onClick={handleChange} >
-            <span>Guardar</span>
+            <span>Crear usuario</span>
           </AcceptButton>
         </div>
       </Card>
     </div>
-  )
-}
-
-function DeleteEmployee(props: { employeeId: string }) {
-  const { mutateAsync: deleteEmployee, isLoading } =
-    api.employees.delete.useMutation();
-
-  const router = useRouter();
-
-  const handleDelete: MouseEventHandler<HTMLButtonElement> = (e) => {
-    e.preventDefault();
-    deleteEmployee({ id: props.employeeId }).then(() => {
-      toast.success("Empleado eliminado correctamente");
-      router.push("/employees");
-    });
-  };
-  return (
-    <AlertDialog>
-      <AlertDialogTrigger asChild>
-        <Button variant="destructive" className="w-[160px]">
-          Eliminar empleado
-        </Button>
-      </AlertDialogTrigger>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>
-            ¿Está seguro que desea eliminar al empleado?
-          </AlertDialogTitle>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Cancelar</AlertDialogCancel>
-          <AlertDialogAction
-            className="bg-red-500 hover:bg-red-600 active:bg-red-700"
-            onClick={handleDelete}
-            disabled={isLoading}
-          >
-            Eliminar definitivamente
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
   );
 }

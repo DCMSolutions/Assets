@@ -1,19 +1,22 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
-import { groupsRouter } from "./groups";
+import { GroupRaw, groupsRouter } from "./groups";
 import { env } from "~/env";
 import { api } from "~/trpc/server";
 import { TRPCError } from "@trpc/server";
 import { ERROR_MESSAGES } from "~/lib/errors";
+import { AssetRaw } from "./assets";
+import { CategoryRaw } from "./categories";
 
 type EmployeeRaw = {
   id: string,
   nombre: string,
   mail: string | null,
+  telefono: string | null,
   habilitado: boolean,
-  assetsAsignados: string[],
-  categoriasAssetsAsignadas: number[],
-  gruposAsignados: number[]
+  assetsAsignados: AssetRaw[],
+  categoriasAssetsAsignadas: CategoryRaw[],
+  gruposAsignados: GroupRaw[]
 }
 
 export type Employee = EmployeeRaw
