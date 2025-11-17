@@ -11,7 +11,7 @@ export default async function EmployeePage(props: { params: { employeeId: string
   //   redirect("/accessdenied");
   // }
 
-  const employee: Employee = await api.employees.getById.query({ id: props.params.employeeId });
+  const employee: Employee = await api.employees.getByIdWithGroups.query({ id: props.params.employeeId });
   const groups = await api.employees.groups.getAllAsOptions.query()
 
   if (!employee) {

@@ -1,6 +1,5 @@
 "use client"
 
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import AcceptButton from "~/components/accept-button";
@@ -11,7 +10,6 @@ import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { GroupOption } from "~/server/api/routers/groups";
 import { api } from "~/trpc/react";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "~/components/ui/accordion";
 
 interface CreateEmployeeProps {
   groupsAsOptions: GroupOption[]
@@ -22,7 +20,7 @@ export default function CreateEmployeeForm({
   const [id, setId] = useState<string>();
   const [firstName, setFirstName] = useState<string>();
   const [lastName, setLastName] = useState<string>();
-  const [email, setEmail] = useState<string>();
+  const [mail, setMail] = useState<string>();
   const [phone, setPhone] = useState<string>();
   const [active, setActive] = useState<boolean>(true);
 
@@ -31,24 +29,38 @@ export default function CreateEmployeeForm({
   const [legajo, setLegajo] = useState<string>();
   const [titulo, setTitulo] = useState<string>();
 
-  const { mutateAsync: editEmployee, isLoading } = api.employees.edit.useMutation();
-
-  const router = useRouter();
+  const { mutateAsync: createEmployee, isLoading } = api.employees.create.useMutation();
 
   async function handleChange() {
+    function cleanForm() {
+      setId("")
+      setFirstName("")
+      setLastName("")
+      setMail("")
+      setPhone("")
+      setSelectedGroups([])
+    }
     try {
-      await editEmployee({
+      const groupIds: number[] = []
+      selectedGroups.forEach((groupId) => {
+        groupIds.push(parseInt(groupId))
+      })
+      await createEmployee({
         id: id!,
-        nombre: `${lastName}, ${firstName}`,
-        mail: email,
-        habilitado: active
+        nombre: firstName!,
+        apellido: lastName!,
+        mail,
+        telefono: phone,
+        groupIds,
+        habilitado: active,
       });
       toast.success("Empleado modificado correctamente.");
-      router.refresh();
+      cleanForm()
     } catch {
       toast.error("Ocurrió un error al intentar modificar el empleado.");
     }
   }
+
 
   return (
     <div className="flex justify-center">
@@ -88,8 +100,8 @@ export default function CreateEmployeeForm({
           <Input
             id="email"
             placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={mail}
+            onChange={(e) => setMail(e.target.value)}
           />
         </div>
 

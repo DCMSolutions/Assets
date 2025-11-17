@@ -1,8 +1,6 @@
 "use client";
 
-import { CheckIcon, Loader2 } from "lucide-react";
 import { MouseEventHandler, useState } from "react";
-import { Title } from "~/components/title";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
@@ -36,31 +34,46 @@ export default function EmployeeForm({
   groupsAsOptions
 }: EmployeeFormProps) {
   const [id, _] = useState<string>(employee?.id!);
-  const [firstName, setFirstName] = useState(employee.nombre.split(", ")[1]);
-  const [lastName, setLastName] = useState(employee.nombre.split(", ")[0]);
-  const [email, setEmail] = useState(employee?.mail!);
+  const [firstName, setFirstName] = useState(employee.nombre);
+  const [lastName, setLastName] = useState(employee.apellido);
+  const [mail, setEmail] = useState(employee?.mail!);
   const [phone, setPhone] = useState<string>(employee?.telefono ?? "");
   const [active, setActive] = useState<boolean>(employee?.habilitado!);
 
-  const [selectedGroups, setSelectedGroups] = useState<string[]>([])
+  const [selectedGroups, setSelectedGroups] = useState<string[]>(employee?.grupos!)
 
   const [legajo, setLegajo] = useState<string>();
   const [titulo, setTitulo] = useState<string>();
 
-  const { mutateAsync: editEmployee, isLoading } = api.employees.edit.useMutation();
-
-  const router = useRouter();
+  const { mutateAsync: EditEmployee, isLoading } = api.employees.edit.useMutation();
 
   async function handleChange() {
+    const toAssign: number[] = []
+    const toUnassign: number[] = []
+    selectedGroups!.forEach(selectedG => {
+      const alreadyAssigned = employee.grupos!.some(empGroup => empGroup === selectedG)
+      if (!alreadyAssigned) {
+        toAssign.push(parseInt(selectedG))
+      }
+    })
+    employee.grupos!.forEach(groupOfEmp => {
+      const notInGroup = selectedGroups!.some(selectedGroup => selectedGroup === groupOfEmp)
+      if (!notInGroup) {
+        toUnassign.push(parseInt(groupOfEmp))
+      }
+    })
     try {
-      await editEmployee({
+      await EditEmployee({
         id,
-        nombre: `${lastName}, ${firstName}`,
-        mail: email,
-        habilitado: active
+        nombre: firstName!,
+        apellido: lastName!,
+        mail: mail,
+        telefono: phone,
+        habilitado: active,
+        toAssign,
+        toUnassign
       });
       toast.success("Empleado modificado correctamente.");
-      router.refresh();
     } catch {
       toast.error("Ocurrió un error al intentar modificar el empleado.");
     }
@@ -99,11 +112,11 @@ export default function EmployeeForm({
         </div>
 
         <div className="flex items-center gap-2">
-          <Label htmlFor="email" className="font-bold">Email</Label>
+          <Label htmlFor="mail" className="font-bold">Email</Label>
           <Input
-            id="email"
+            id="mail"
             placeholder="Email"
-            value={email}
+            value={mail}
             onChange={(e) => setEmail(e.target.value)}
           />
         </div>

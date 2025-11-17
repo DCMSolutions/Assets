@@ -52,6 +52,30 @@ export async function getEmployeeGroups() {
   return rawGroups
 }
 
+export async function assignEmployeesToGroup({
+  employees,
+  groupId,
+  assign
+}: { employees: string[], groupId: number, assign: boolean }) {
+  if (employees.length !== 0) {
+    const endpoint = `${env.SERVER_URL}/api/AssetsGrupoEmpleados/empleados/${assign ? "asignar" : "desasignar"}/${groupId}`
+    const assignmentResponse = await fetch(endpoint,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${env.TOKEN_EMPRESA}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(employees)
+      })
+    if (!assignmentResponse.ok) {
+      const error = await assignmentResponse.text()
+      console.log(`Ocurrió un problema al ${assign ? "asignar" : "desasignar"} empleados editando un grupo (id: ${groupId}) con el siguiente mensaje de error:`, error)
+      return
+    }
+  }
+}
+
 export const groupsRouter = createTRPCRouter({
   getAll: publicProcedure
     .query(async () => {
@@ -159,25 +183,8 @@ export const groupsRouter = createTRPCRouter({
           message: ERROR_MESSAGES.GENERIC_INTERNAL_ERROR
         })
       }
-      if (input.employeesToAssign.length === 0) {
-        console.log("Se creó un grupo sin ningún empleado asignado")
-        return
-      }
       const group = await createResponse.json()
-      const assignEmployeesResponse = await fetch(`${env.SERVER_URL}/api/AssetsGrupoEmpleados/empleados/asignar/${group.id}`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${env.TOKEN_EMPRESA}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(input.employeesToAssign)
-        })
-      if (!assignEmployeesResponse.ok) {
-        const error = await assignEmployeesResponse.text()
-        console.log(`Ocurrió un problema al intentar asignar empleados a un grupo recién creado (id: ${group.id}, nombre: ${input.nombre}) con el siguiente mensaje de error:`, error)
-        return
-      }
+      assignEmployeesToGroup({ employees: input.employeesToAssign, groupId: group.id, assign: true })
     }),
   edit: publicProcedure
     .input(
@@ -212,40 +219,8 @@ export const groupsRouter = createTRPCRouter({
         console.log(`Ocurrió un problema al intentar editar un grupo (id: ${input.id}, nombre: ${input.nombre}) con el siguiente mensaje de error:`, error)
         return
       }
-      if (input.toAssign.length !== 0) {
-        const assignmentResponse = await fetch(`${env.SERVER_URL}/api/AssetsGrupoEmpleados/empleados/asignar/${input.id}`,
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${env.TOKEN_EMPRESA}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(input.toAssign)
-          })
-        if (!assignmentResponse.ok) {
-          const error = await assignmentResponse.text()
-          console.log(`Ocurrió un problema al asignar empleados editando un grupo (id: ${input.id}, nombre: ${input.nombre}) con el siguiente mensaje de error:`, error)
-          return
-        }
-
-      }
-
-      if (input.toUnassign.length !== 0) {
-        const unassignmentResponse = await fetch(`${env.SERVER_URL}/api/AssetsGrupoEmpleados/empleados/desasignar/${input.id}`,
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${env.TOKEN_EMPRESA}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(input.toUnassign)
-          })
-        if (unassignmentResponse.ok) {
-          const error = await unassignmentResponse.text()
-          console.log(`Ocurrió un problema al desasignar empleados editando un grupo (id: ${input.id}, nombre: ${input.nombre}) con el siguiente mensaje de error:`, error)
-          return
-        }
-      }
+      assignEmployeesToGroup({ employees: input.toAssign, groupId: input.id, assign: true })
+      assignEmployeesToGroup({ employees: input.toUnassign, groupId: input.id, assign: false })
     }),
   delete: publicProcedure
     .input(
