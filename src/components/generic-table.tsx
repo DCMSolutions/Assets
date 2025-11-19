@@ -32,7 +32,7 @@ interface DataTableProps<TData, TValue> {
 export function DataTable<TData extends { id: string }>({
   columns,
   data,
-  pathToRowPage = "/"
+  pathToRowPage
 }: DataTableProps<TData, unknown>) {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const table = useReactTable({

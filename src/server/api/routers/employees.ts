@@ -125,7 +125,7 @@ export const employeesRouter = createTRPCRouter({
       }
       const employee: EmployeeWithGroupsRaw = await employeeResponse.json()
       const { grupos, ...rest } = employee
-      // console.log(employee)
+      console.log(employee)
       const groupsIds = grupos.map(group => {
         const { id } = group
         return id.toString()

@@ -19,7 +19,7 @@ import { asTRPCError } from "~/lib/errors";
 import { api } from "~/trpc/react";
 
 interface AddCategoryDialogProps {
-  onCreate(newCategory: string): void
+  onCreate(newCategory: { id: string, nombre: string }): void
 }
 
 export function AddCategoryDialog({
@@ -34,12 +34,12 @@ export function AddCategoryDialog({
 
   async function handleCreate() {
     try {
-      await createCategory({
+      const category = await createCategory({
         nombre
       });
 
       toast.success("Activo agregado correctamente");
-      onCreate(nombre)
+      onCreate(category!)
       router.refresh();
       setOpen(false);
     } catch (e) {

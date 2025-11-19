@@ -7,6 +7,8 @@ import { api } from "~/trpc/server";
 
 export type AssetRaw = {
   id: string,
+  numeroDeSerie: string | undefined,
+  idMarca: number | undefined,
   modelo: string,
   poseedorActual: string | undefined,
   idCategoria: number,
@@ -15,7 +17,20 @@ export type AssetRaw = {
   empleadoAsignado: string | undefined,
   idBoxAsignado: number | undefined,
   nroSerieLocker: string | undefined,
-  estado: number
+  estado: number,
+  habilitado: boolean
+}
+
+export type AssetWithEmployeesAndGroupsRaw = {
+  asset: AssetRaw,
+  empleados: string[],
+  grupos: number[]
+}
+
+export type AssetWithEmployeesAndGroups = {
+  asset: Asset,
+  employees: string[],
+  groups: string[]
 }
 
 export type Asset = Omit<AssetRaw, "idCategoria" | "idBoxAsignado" | "estado"> & {
@@ -83,6 +98,34 @@ async function getAssets() {
   const assets: AssetRaw[] = await assetsResponse.json()
   // console.log("Todos los activos actuales:", assets)
   return assets
+
+}
+
+async function assignAssetToEmployeeGroups({
+  assetId,
+  groupIds,
+  assign
+}: { assetId: string, groupIds: number[], assign: boolean }) {
+  if (groupIds.length === 0) return
+
+  const baseURL = `${env.SERVER_URL}/api/AssetsGrupoEmpleados/assetsGrupo/${assign ? "asignar" : "desasignar"}`
+  groupIds.forEach(async (groupId) => {
+    const endpoint = `${baseURL}/${groupId}`
+    const assignmentResponse = await fetch(endpoint,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${env.TOKEN_EMPRESA}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify([assetId])
+      })
+    if (!assignmentResponse.ok) {
+      const error = await assignmentResponse.text()
+      console.log(`Ocurrió un problema al ${assign ? "asignar" : "desasignar"} el activo (tag: ${assetId}) al grupo (id: ${groupId}) con el siguiente mensaje de error:`, error)
+      return
+    }
+  })
 
 }
 
@@ -169,19 +212,64 @@ export const assetsRouter = createTRPCRouter({
       return asset
 
     }),
+  getByIdWithEmployeesAndGroups: publicProcedure
+    .input(z.object({
+      id: z.string()
+    }))
+    .query(async ({ input }) => {
+      const assetResponse = await fetch(`${env.SERVER_URL}/api/Asset/conEmpleados/${input.id}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${env.TOKEN_EMPRESA}`,
+          }
+        })
+
+      if (!assetResponse.ok) {
+        const error = await assetResponse.text()
+        console.log(`Ocurrió un problema al intentar pedir un activo (${input.id}) con el siguiente mensaje de error:`, error)
+      }
+      const rawAssetWEG: AssetWithEmployeesAndGroupsRaw = await assetResponse.json()
+      // console.log(rawAsset)
+      const { asset, empleados, grupos } = rawAssetWEG
+      const groups = grupos.map(g => g.toString())
+      const { idCategoria, idBoxAsignado, nroSerieLocker, estado, ...rest } = asset
+      const locker = nroSerieLocker ?? ""
+      const box = idBoxAsignado
+        ? idBoxAsignado.toString()
+        : ""
+      const assetToReturn: Asset = {
+        idCategoria: idCategoria.toString(),
+        nroSerieLocker: locker,
+        idBoxAsignado: box,
+        estado: estado.toString(),
+        ...rest
+      }
+      return {
+        asset: assetToReturn,
+        employees: empleados,
+        groups: groups
+      } as AssetWithEmployeesAndGroups
+
+    }),
   create: publicProcedure
     .input(
       z.object({
         id: z.string(),
+        numeroDeSerie: z.string(),
+        idMarca: z.number().nullish(),
         modelo: z.string(),
         idCategoria: z.number(),
         idEmpleadoAsignado: z.string().nullish(),
         idBoxAsignado: z.number().nullish(),
         nroSerieLocker: z.string().nullish(),
-        estado: z.number()
+        estado: z.number(),
+        habilitado: z.boolean(),
+        groupsToAssign: z.array(z.number())
       })
     )
     .mutation(async ({ input }) => {
+      const { groupsToAssign, ...asset } = input
       const createResponse = await fetch(`${env.SERVER_URL}/api/Asset`,
         {
           method: "POST",
@@ -189,29 +277,37 @@ export const assetsRouter = createTRPCRouter({
             Authorization: `Bearer ${env.TOKEN_EMPRESA}`,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(input)
+          body: JSON.stringify(asset)
         })
 
       if (!createResponse.ok) {
         const error = createResponse.text()
-        console.dir(input)
+        console.dir(asset)
         console.log(`Ocurrió un problema al intentar crear un activo el siguiente mensaje de error:`, error)
+        return
       }
+      assignAssetToEmployeeGroups({ assetId: asset.id, groupIds: groupsToAssign, assign: true })
     }),
   edit: publicProcedure
     .input(
       z.object({
         id: z.string(),
+        numeroDeSerie: z.string(),
+        idMarca: z.number().nullish(),
         modelo: z.string(),
         idCategoria: z.number(),
         idEmpleadoAsignado: z.string().nullish(),
         idBoxAsignado: z.number().nullish(),
         nroSerieLocker: z.string().nullish(),
-        estado: z.number()
+        estado: z.number(),
+        habilitado: z.boolean(),
+        groupsToAssign: z.array(z.number()),
+        groupsToUnassign: z.array(z.number()),
       })
     )
     .mutation(async ({ input }) => {
 
+      const { groupsToAssign, groupsToUnassign, ...asset } = input
       const editResponse = await fetch(`${env.SERVER_URL}/api/Asset`,
         {
           method: "PUT",
@@ -219,13 +315,16 @@ export const assetsRouter = createTRPCRouter({
             Authorization: `Bearer ${env.TOKEN_EMPRESA}`,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(input)
+          body: JSON.stringify(asset)
         })
 
       if (!editResponse.ok) {
         const error = await editResponse.text()
-        console.log(`Ocurrió un problema al intentar editar un activo (${input}) con el siguiente mensaje de error:`, error)
+        console.log(`Ocurrió un problema al intentar editar un activo (tag: ${asset.id}) con el siguiente mensaje de error:`, error)
+        return
       }
+      assignAssetToEmployeeGroups({ assetId: asset.id, groupIds: groupsToAssign, assign: true })
+      assignAssetToEmployeeGroups({ assetId: asset.id, groupIds: groupsToUnassign, assign: false })
     }),
   assignToEmployee: publicProcedure
     .input(z.object({

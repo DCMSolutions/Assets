@@ -86,15 +86,15 @@ export function AppSidebar({ lang }: { lang?: string }) {
       links: [
         {
           name: "Modelos de activos",
-          href: "/",
+          href: "/models",
         },
         {
           name: "Categorías de activos",
-          href: "/",
+          href: "/categories",
         },
         {
           name: "Marcas de activos",
-          href: "/",
+          href: "/brands",
         },
         {
           name: "Proveedores de activos",
