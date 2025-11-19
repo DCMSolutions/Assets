@@ -13,6 +13,7 @@ import { Label } from "~/components/ui/label";
 import { asTRPCError } from "~/lib/errors";
 import { AssetWithEmployeesAndGroups } from "~/server/api/routers/assets";
 import { CategoryOption } from "~/server/api/routers/categories";
+import { AddCategoryDialog } from "~/app/(settings)/categories/add-category-dialog";
 import { EmployeeOption } from "~/server/api/routers/employees";
 import { GroupOption } from "~/server/api/routers/groups";
 import { api } from "~/trpc/react";
@@ -43,6 +44,7 @@ export default function AssetForm({
   const [serial, setSerial] = useState<string>(assetWEG.asset.numeroDeSerie ?? "");
   const [modelo, setModelo] = useState<string>(assetWEG.asset.modelo);
   const [idCategoria, setIdCategoria] = useState<string>(assetWEG.asset.idCategoria);
+  const [categories, setCategories] = useState<CategoryOption[]>(categoryOptions);
   const [idEmpleadoAsignado, setIdEmpleadoAsignado] = useState<string>(assetWEG.asset.idEmpleadoAsignado ?? "");
   const [idBoxAsignado, setIdBoxAsignado] = useState<string>(assetWEG.asset.idBoxAsignado ?? "");
   const [nroSerieLocker, setNroSerieLocker] = useState<string>(assetWEG.asset.nroSerieLocker ?? "");
@@ -166,11 +168,14 @@ export default function AssetForm({
         <div className="flex items-center gap-2 flex-1">
           <Label className="font-bold">Categoría</Label>
           <Selector
-            options={categoryOptions}
+            options={categories}
             value={idCategoria}
             onChange={setIdCategoria}
             placeholder="Elegir categoría"
           />
+          <AddCategoryDialog onCreate={(newCategory) => {
+            setCategories(prev => [...prev, { value: newCategory.id, label: newCategory.nombre }])
+          }} />
         </div>
 
         <div className="flex items-center gap-2">

@@ -4,7 +4,9 @@ import { Loader2Icon, PlusCircleIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import Selector from "~/components/selector";
 import { Button } from "~/components/ui/button";
+import { Checkbox } from "~/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -16,7 +18,13 @@ import { Input } from "~/components/ui/input";
 import { asTRPCError } from "~/lib/errors";
 import { api } from "~/trpc/react";
 
-export function AddCategoryDialog() {
+interface AddCategoryDialogProps {
+  onCreate(newCategory: { id: string, nombre: string }): void
+}
+
+export function AddCategoryDialog({
+  onCreate
+}: AddCategoryDialogProps) {
   const { mutateAsync: createCategory, isLoading } = api.assets.categories.create.useMutation();
   const [nombre, setNombre] = useState<string>("");
 
@@ -26,11 +34,12 @@ export function AddCategoryDialog() {
 
   async function handleCreate() {
     try {
-      await createCategory({
+      const category = await createCategory({
         nombre
       });
 
       toast.success("Activo agregado correctamente");
+      onCreate(category!)
       router.refresh();
       setOpen(false);
     } catch (e) {
