@@ -36,7 +36,7 @@ export default function EmployeeForm({
   const [id, _] = useState<string>(employee?.id!);
   const [firstName, setFirstName] = useState(employee.nombre);
   const [lastName, setLastName] = useState(employee.apellido);
-  const [mail, setEmail] = useState(employee?.mail!);
+  const [mail, setMail] = useState(employee?.mail ?? "");
   const [phone, setPhone] = useState<string>(employee?.telefono ?? "");
   const [active, setActive] = useState<boolean>(employee?.habilitado!);
 
@@ -62,6 +62,15 @@ export default function EmployeeForm({
         toUnassign.push(parseInt(groupOfEmp))
       }
     })
+    const cleanId = id.trim().split(" ").join("")
+    if (cleanId.length < 3) {
+      toast.error("Por favor asegúrese que el UID tenga al menos 3 caracteres no vacíos.")
+      return
+    }
+    if (!firstName || !lastName) {
+      toast.error("Por favor asegúrese de rellenar todos los campos obligatorios.")
+      return
+    }
     try {
       await EditEmployee({
         id,
@@ -88,6 +97,7 @@ export default function EmployeeForm({
             id="rfid"
             placeholder="UID"
             value={id}
+            onChange={() => { return }}
           />
         </div>
 
@@ -117,7 +127,7 @@ export default function EmployeeForm({
             id="mail"
             placeholder="Email"
             value={mail}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => setMail(e.target.value)}
           />
         </div>
 

@@ -10,6 +10,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { SidebarProvider } from "~/components/ui/sidebar";
 import TopBar from "~/components/layout/topbar";
 import { AppSidebar } from "~/components/layout/app-sidebar";
+import { Toaster } from "sonner";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -42,6 +43,7 @@ export default function RootLayout({
                   <TopBar />
                   <main className="flex-grow mt-[50px] p-4">
                     {children}
+                    <Toaster richColors position="bottom-right" />
                   </main>
                 </SidebarProvider>
               </ErrorBoundary>

@@ -57,22 +57,22 @@ export async function assignEmployeesToGroup({
   groupId,
   assign
 }: { employees: string[], groupId: number, assign: boolean }) {
-  if (employees.length !== 0) {
-    const endpoint = `${env.SERVER_URL}/api/AssetsGrupoEmpleados/empleados/${assign ? "asignar" : "desasignar"}/${groupId}`
-    const assignmentResponse = await fetch(endpoint,
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${env.TOKEN_EMPRESA}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(employees)
-      })
-    if (!assignmentResponse.ok) {
-      const error = await assignmentResponse.text()
-      console.log(`Ocurrió un problema al ${assign ? "asignar" : "desasignar"} empleados editando un grupo (id: ${groupId}) con el siguiente mensaje de error:`, error)
-      return
-    }
+  if (employees.length === 0) return
+
+  const endpoint = `${env.SERVER_URL}/api/AssetsGrupoEmpleados/empleados/${assign ? "asignar" : "desasignar"}/${groupId}`
+  const assignmentResponse = await fetch(endpoint,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${env.TOKEN_EMPRESA}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(employees)
+    })
+  if (!assignmentResponse.ok) {
+    const error = await assignmentResponse.text()
+    console.log(`Ocurrió un problema al ${assign ? "asignar" : "desasignar"} empleados a un grupo (id: ${groupId}) con el siguiente mensaje de error:`, error)
+    return
   }
 }
 
@@ -102,6 +102,7 @@ export const groupsRouter = createTRPCRouter({
           label: nombre
         } as GroupOption
       })
+      console.log(groupsAsOptions)
       return groupsAsOptions
     }),
   getAllForTable: publicProcedure

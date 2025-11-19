@@ -97,6 +97,8 @@ export const categoriesRouter = createTRPCRouter({
         console.log("Ocurrió un problema al intentar crear una categoría nuevo con el siguiente mensaje de error:", error)
         return
       }
+      const category: CategoryRaw = await createResponse.json()
+      return { id: category.id.toString(), nombre: category.nombre }
     }),
   edit: publicProcedure
     .input(

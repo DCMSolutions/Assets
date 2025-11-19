@@ -1,25 +1,34 @@
 "use client";
 
+import { Loader2Icon, PlusCircleIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { MouseEventHandler, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import AcceptButton from "~/components/accept-button";
-import MultiSelect from "~/components/ui/multiselect";
-import { PrintQRDialog } from "~/components/print-qr-dialog";
 import Selector from "~/components/selector";
-import { Card } from "~/components/ui/card";
+import { Button } from "~/components/ui/button";
+import { Checkbox } from "~/components/ui/checkbox";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "~/components/ui/dialog";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { asTRPCError } from "~/lib/errors";
-import { AssetWithEmployeesAndGroups } from "~/server/api/routers/assets";
+import { AssetState } from "~/server/api/routers/assets";
 import { CategoryOption } from "~/server/api/routers/categories";
 import { EmployeeOption } from "~/server/api/routers/employees";
-import { GroupOption } from "~/server/api/routers/groups";
 import { api } from "~/trpc/react";
-import { Checkbox } from "~/components/ui/checkbox";
+import { AddCategoryDialog } from "./add-category-dialog";
+import { nanoid } from "nanoid";
+import { GroupOption } from "~/server/api/routers/groups";
+import MultiSelect from "~/components/ui/multiselect";
+import { Card } from "~/components/ui/card";
+import AcceptButton from "~/components/accept-button";
 
-interface AssetFormProps {
-  assetWEG: AssetWithEmployeesAndGroups,
+interface AddAssetDialogProps {
   categoryOptions: CategoryOption[],
   employeeOptions: EmployeeOption[],
   groupOptions: GroupOption[],
@@ -27,104 +36,77 @@ interface AssetFormProps {
   lockersAndBoxes: { nroSerieLocker: string, boxes: number[] }[]
 }
 
-export default function AssetForm({
-  assetWEG,
+export default function CreateAssetForm({
   categoryOptions,
   employeeOptions,
   groupOptions,
   stateOptions,
   lockersAndBoxes
-}: AssetFormProps) {
-  const { mutateAsync: editAsset, isLoading: loadingEdition } = api.assets.edit.useMutation();
-  const { mutateAsync: assignToEmployee, isLoading: loadingAssignment } = api.assets.assignToEmployee.useMutation();
-  const { mutateAsync: unassignToEmployee, isLoading: loadingUnassignment } = api.assets.unassignToEmployee.useMutation();
+}: AddAssetDialogProps) {
+  const { mutateAsync: createAsset, isLoading } = api.assets.create.useMutation();
 
-  const [id, _] = useState<string>(assetWEG.asset.id);
-  const [serial, setSerial] = useState<string>(assetWEG.asset.numeroDeSerie ?? "");
-  const [modelo, setModelo] = useState<string>(assetWEG.asset.modelo);
-  const [idCategoria, setIdCategoria] = useState<string>(assetWEG.asset.idCategoria);
-  const [idEmpleadoAsignado, setIdEmpleadoAsignado] = useState<string>(assetWEG.asset.idEmpleadoAsignado ?? "");
-  const [idBoxAsignado, setIdBoxAsignado] = useState<string>(assetWEG.asset.idBoxAsignado ?? "");
-  const [nroSerieLocker, setNroSerieLocker] = useState<string>(assetWEG.asset.nroSerieLocker ?? "");
-  const [estado, setEstado] = useState<string>(assetWEG.asset.estado);
+  const [id, setId] = useState<string>("");
+  const [serial, setSerial] = useState<string>("");
+  const [modelo, setModelo] = useState<string>("");
+  const [idCategoria, setIdCategoria] = useState<string>("");
+  const [categories, setCategories] = useState<CategoryOption[]>(categoryOptions);
+  const [idEmpleadoAsignado, setIdEmpleadoAsignado] = useState<string>("");
+  const [selectedGroups, setSelectedGroups] = useState<string[]>([])
+  const [idBoxAsignado, setIdBoxAsignado] = useState<string>("");
+  const [nroSerieLocker, setNroSerieLocker] = useState<string>("");
+  const [estado, setEstado] = useState<string>("0");
   const [active, setActive] = useState<boolean>(true);
 
   const [boxOptions, setBoxOptions] = useState<{ value: string, label: string }[]>([]);
-  const [boxDisabled, setBoxDisabled] = useState<boolean>(assetWEG.asset.nroSerieLocker ? false : true);
+  const [boxDisabled, setBoxDisabled] = useState<boolean>(true);
 
-  const [selectedGroups, setSelectedGroups] = useState<string[]>(assetWEG.groups ?? [])
-
-  const router = useRouter();
-
-  const lockerOptions = lockersAndBoxes.map(item => {
-    return { value: item.nroSerieLocker, label: item.nroSerieLocker }
-  })
+  const lockerOptions = lockersAndBoxes
+    ? lockersAndBoxes.map(item => {
+      return { value: item.nroSerieLocker, label: item.nroSerieLocker }
+    })
+    : []
 
   const boxesAsOptionsByLocker = (locker: string) => {
     const boxes = lockersAndBoxes.find(item => item.nroSerieLocker === locker)?.boxes
-    if (!boxes) {
-      return []
-    }
     const boxesAsOptions = boxes!.map(box => {
       return { value: box.toString(), label: box.toString() }
     })
-    if (locker === assetWEG.asset.nroSerieLocker) {
-      boxesAsOptions.push({ value: assetWEG.asset.idBoxAsignado!, label: assetWEG.asset.idBoxAsignado! })
-    }
     return boxesAsOptions
   }
 
+  const router = useRouter();
+
   useEffect(() => {
-    setBoxOptions(boxesAsOptionsByLocker(assetWEG.asset.nroSerieLocker!))
-    setIdBoxAsignado(assetWEG.asset.idBoxAsignado!)
+    const tag = nanoid()
+    setId(tag)
   }, [])
 
-  async function handleEdit() {
-    const toAssign: string[] = []
-    const toUnassign: string[] = []
-    selectedGroups!.forEach(selectedG => {
-      const groupWasNotAssigned = assetWEG.groups.some(group => group === selectedG)
-      if (!groupWasNotAssigned) {
-        toAssign.push(selectedG)
-      }
-    })
-    assetWEG.groups.forEach(group => {
-      const groupIsNoLongerAssigned = selectedGroups!.some(selectedG => selectedG === group)
-      if (!groupIsNoLongerAssigned) {
-        toUnassign.push(group)
-      }
-    })
-
-    const box = idBoxAsignado
-      ? parseInt(idBoxAsignado)
-      : null
+  async function handleCreate() {
+    const box = idBoxAsignado === "" || idBoxAsignado === " "
+      ? null
+      : parseInt(idBoxAsignado)
+    const locker = nroSerieLocker === "" || nroSerieLocker === " "
+      ? null
+      : nroSerieLocker
+    const employee = idEmpleadoAsignado === "" || idEmpleadoAsignado === " "
+      ? null
+      : idEmpleadoAsignado
+    const groupsToAssign = selectedGroups.map(group => parseInt(group))
     try {
-      await editAsset({
-        id,
+      await createAsset({
+        id: id!,
         numeroDeSerie: serial,
         modelo,
-        idCategoria: parseInt(idCategoria!),
-        idEmpleadoAsignado,
+        idCategoria: parseInt(idCategoria),
+        idEmpleadoAsignado: employee,
         idBoxAsignado: box,
-        nroSerieLocker,
-        estado: parseInt(estado!),
+        nroSerieLocker: locker,
+        estado: parseInt(estado),
         habilitado: active,
-        groupsToAssign: toAssign.map(g => parseInt(g)),
-        groupsToUnassign: toUnassign.map(g => parseInt(g)),
+        groupsToAssign
       });
 
-      if (assetWEG.asset.idEmpleadoAsignado) {
-        if (!idEmpleadoAsignado || (idEmpleadoAsignado && (idEmpleadoAsignado !== assetWEG.asset.idEmpleadoAsignado))) {
-          await unassignToEmployee({ asset: assetWEG.asset.id, employee: assetWEG.asset.idEmpleadoAsignado })
-        }
-      }
-      if (idEmpleadoAsignado) {
-        if (!assetWEG.asset.idEmpleadoAsignado || (assetWEG.asset.idEmpleadoAsignado && (assetWEG.asset.idEmpleadoAsignado !== idEmpleadoAsignado))) {
-          await assignToEmployee({ asset: assetWEG.asset.id, employee: idEmpleadoAsignado })
-        }
-      }
-
-      toast.success("Activo modificado correctamente");
+      toast.success("Activo agregado correctamente");
       router.refresh();
     } catch (e) {
       const error = asTRPCError(e)!;
@@ -140,7 +122,7 @@ export default function AssetForm({
           <Input
             id="id"
             value={id}
-            disabled
+            placeholder="Generando TAG"
           />
         </div>
 
@@ -166,11 +148,14 @@ export default function AssetForm({
         <div className="flex items-center gap-2 flex-1">
           <Label className="font-bold">Categoría</Label>
           <Selector
-            options={categoryOptions}
+            options={categories}
             value={idCategoria}
             onChange={setIdCategoria}
             placeholder="Elegir categoría"
           />
+          <AddCategoryDialog onCreate={(newCategory) => {
+            setCategories(prev => [...prev, { value: newCategory.id, label: newCategory.nombre }])
+          }} />
         </div>
 
         <div className="flex items-center gap-2">
@@ -248,11 +233,11 @@ export default function AssetForm({
         </div>
 
         <div className="flex justify-end">
-          <AcceptButton isLoading={loadingEdition || loadingAssignment || loadingUnassignment} onClick={handleEdit}>
-            <span>Guardar</span>
+          <AcceptButton isLoading={isLoading} onClick={handleCreate}>
+            <span>Crear activo</span>
           </AcceptButton>
         </div>
       </Card>
     </div>
-  )
+  );
 }

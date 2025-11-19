@@ -17,7 +17,7 @@ interface CreateEmployeeProps {
 export default function CreateEmployeeForm({
   groupsAsOptions
 }: CreateEmployeeProps) {
-  const [id, setId] = useState<string>("");
+  const [id, setId] = useState<string>();
   const [firstName, setFirstName] = useState<string>();
   const [lastName, setLastName] = useState<string>();
   const [mail, setMail] = useState<string>();
@@ -40,22 +40,13 @@ export default function CreateEmployeeForm({
       setPhone("")
       setSelectedGroups([])
     }
-    const cleanId = id.trim().split(" ").join("")
-    if (cleanId.length < 3) {
-      toast.error("Por favor asegúrese que el UID tenga al menos 3 caracteres no vacíos.")
-      return
-    }
-    if (!firstName || !lastName) {
-      toast.error("Por favor asegúrese de rellenar todos los campos obligatorios.")
-      return
-    }
     try {
       const groupIds: number[] = []
       selectedGroups.forEach((groupId) => {
         groupIds.push(parseInt(groupId))
       })
       await createEmployee({
-        id: cleanId,
+        id: id!,
         nombre: firstName!,
         apellido: lastName!,
         mail,
@@ -105,41 +96,6 @@ export default function CreateEmployeeForm({
         </div>
 
         <div className="flex items-center gap-2">
-          <Label htmlFor="active" className="font-bold">Habilitado</Label>
-          <Checkbox
-            id="active"
-            defaultChecked
-            onCheckedChange={() => setActive(prev => !prev)}
-          />
-        </div>
-
-        <div className="flex items-center gap-2">
-          <Label className="font-bold">Grupos</Label>
-          <MultiSelect
-            options={groupsAsOptions}
-            placeholder={"Asignar a grupos"}
-            value={selectedGroups}
-            onChange={setSelectedGroups}
-            isLoading={!!groupsAsOptions}
-            disabled={isLoading}
-          />
-        </div>
-
-        <div className="w-full bg-[#222D32] p-2">
-          <span className="text-lg text-white">Información opcional</span>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <Label htmlFor="employee-number" className="font-bold">Número de empleado</Label>
-          <Input
-            id="employee-number"
-            placeholder="Número de empleado"
-            value={legajo}
-            onChange={(e) => setLegajo(e.target.value)}
-          />
-        </div>
-
-        <div className="flex items-center gap-2">
           <Label htmlFor="email" className="font-bold">Email</Label>
           <Input
             id="email"
@@ -156,6 +112,41 @@ export default function CreateEmployeeForm({
             placeholder="Teléfono"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
+          />
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Label className="font-bold">Grupos</Label>
+          <MultiSelect
+            options={groupsAsOptions}
+            placeholder={"Asignar a grupos"}
+            value={selectedGroups}
+            onChange={setSelectedGroups}
+            isLoading={!!groupsAsOptions}
+            disabled={isLoading}
+          />
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Label htmlFor="active" className="font-bold">Habilitado</Label>
+          <Checkbox
+            id="active"
+            defaultChecked
+            onCheckedChange={() => setActive(prev => !prev)}
+          />
+        </div>
+
+        <div className="w-full bg-[#222D32] p-2">
+          <span className="text-lg text-white">Información opcional</span>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Label htmlFor="employee-number" className="font-bold">Número de empleado</Label>
+          <Input
+            id="employee-number"
+            placeholder="Número de empleado"
+            value={legajo}
+            onChange={(e) => setLegajo(e.target.value)}
           />
         </div>
 
