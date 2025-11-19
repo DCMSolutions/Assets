@@ -21,7 +21,7 @@ import { AssetState } from "~/server/api/routers/assets";
 import { CategoryOption } from "~/server/api/routers/categories";
 import { EmployeeOption } from "~/server/api/routers/employees";
 import { api } from "~/trpc/react";
-import { AddCategoryDialog } from "./add-category-dialog";
+import { AddCategoryDialog } from "~/app/(settings)/categories/add-category-dialog";
 import { nanoid } from "nanoid";
 import { GroupOption } from "~/server/api/routers/groups";
 import MultiSelect from "~/components/ui/multiselect";

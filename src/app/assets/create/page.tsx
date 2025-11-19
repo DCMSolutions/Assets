@@ -17,7 +17,7 @@ export default async function CreateAssetPage() {
       </div>
       <CreateAssetForm
         employeeOptions={employees}
-        groupsAsOptions={groups}
+        groupOptions={groups}
         categoryOptions={categories}
         stateOptions={states}
         lockersAndBoxes={lockersAndBoxes}
