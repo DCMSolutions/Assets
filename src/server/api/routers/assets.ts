@@ -89,7 +89,8 @@ async function getAssets() {
       method: "GET",
       headers: {
         Authorization: `Bearer ${env.TOKEN_EMPRESA}`,
-      }
+      },
+      cache: "no-store"
     })
 
   if (!assetsResponse.ok) {
@@ -193,7 +194,8 @@ export const assetsRouter = createTRPCRouter({
           method: "GET",
           headers: {
             Authorization: `Bearer ${env.TOKEN_EMPRESA}`,
-          }
+          },
+          cache: "no-store"
         })
 
       if (!assetResponse.ok) {
@@ -228,7 +230,8 @@ export const assetsRouter = createTRPCRouter({
           method: "GET",
           headers: {
             Authorization: `Bearer ${env.TOKEN_EMPRESA}`,
-          }
+          },
+          cache: "no-store"
         })
 
       if (!assetResponse.ok) {
@@ -413,7 +416,8 @@ export const assetsRouter = createTRPCRouter({
           method: "GET",
           headers: {
             Authorization: `Bearer ${env.TOKEN_EMPRESA}`,
-          }
+          },
+          cache: "no-store"
         })
       if (!lockersAndBoxesResponse.ok) {
         const error = await lockersAndBoxesResponse.text()
@@ -431,7 +435,8 @@ export const assetsRouter = createTRPCRouter({
           method: "GET",
           headers: {
             Authorization: `Bearer ${env.TOKEN_EMPRESA}`,
-          }
+          },
+          cache: "no-store"
         })
       if (!historyResponse.ok) {
         const error = await historyResponse.text()

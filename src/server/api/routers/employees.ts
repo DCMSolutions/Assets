@@ -46,7 +46,8 @@ export const employeesRouter = createTRPCRouter({
           method: "GET",
           headers: {
             Authorization: `Bearer ${env.TOKEN_EMPRESA}`,
-          }
+          },
+          cache: "no-store"
         })
 
       if (!employeesResponse.ok) {
@@ -86,7 +87,8 @@ export const employeesRouter = createTRPCRouter({
           method: "GET",
           headers: {
             Authorization: `Bearer ${env.TOKEN_EMPRESA}`,
-          }
+          },
+          cache: "no-store"
         })
 
       if (!employeeResponse.ok) {
@@ -112,7 +114,8 @@ export const employeesRouter = createTRPCRouter({
           method: "GET",
           headers: {
             Authorization: `Bearer ${env.TOKEN_EMPRESA}`,
-          }
+          },
+          cache: "no-store"
         })
 
       if (!employeeResponse.ok) {
@@ -258,7 +261,8 @@ export const employeesRouter = createTRPCRouter({
           method: "GET",
           headers: {
             Authorization: `Bearer ${env.TOKEN_EMPRESA}`,
-          }
+          },
+          cache: "no-store"
         })
       // console.log(employeeResponse.status)
       if (employeeResponse.status === 404) {
