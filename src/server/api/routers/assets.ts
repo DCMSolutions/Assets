@@ -108,12 +108,10 @@ async function assignAssetToEmployeeGroups({
   assign
 }: { assetId: string, groupIds: number[], assign: boolean }) {
   if (groupIds.length === 0) return
-  console.log(`ENTRÓ A LA FUNCIÓN DE ${assign ? "ASIGNAR" : "DESASIGNAR"}`)
 
   const baseURL = `${env.SERVER_URL}/api/AssetsGrupoEmpleados/assetsGrupo/${assign ? "asignar" : "desasignar"}`
-  groupIds.forEach(async (groupId) => {
+  for (const groupId of groupIds) {
     const endpoint = `${baseURL}/${groupId}`
-    console.log(`Antes de intentar ${assign ? "asignar" : "desasignar"} el asset ${assetId} al grupo ${groupId}`)
     const assignmentResponse = await fetch(endpoint,
       {
         method: "POST",
@@ -123,15 +121,12 @@ async function assignAssetToEmployeeGroups({
         },
         body: JSON.stringify([assetId])
       })
-    console.log(`Intentó ${assign ? "asignar" : "desasignar"} el asset ${assetId} al grupo ${groupId}`)
     if (!assignmentResponse.ok) {
       const error = await assignmentResponse.text()
       console.log(`Ocurrió un problema al ${assign ? "asignar" : "desasignar"} el activo (tag: ${assetId}) al grupo (id: ${groupId}) con el siguiente mensaje de error:`, error)
       return
     }
-    console.log(`Se ${assign ? "asignó" : "desasignó"} correctamente el activo (tag: ${assetId}) al grupo (id: ${groupId}).`)
-  })
-
+  }
 }
 
 export const assetsRouter = createTRPCRouter({
