@@ -42,7 +42,7 @@ export const employeesTableColumns: ColumnDef<EmployeeForTable>[] = [
   },
   {
     // accessorKey: "",
-    header: "Departamento",
+    header: "DPTO.",
     cell: ({ row }) => (
       <div className="text-center">{"-"}</div>
     ),

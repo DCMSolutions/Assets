@@ -35,12 +35,12 @@ export const historyTableColumns: ColumnDef<AssetEventForTable>[] = [
     ),
   },
   {
-    accessorKey: "idEmpleado",
+    accessorKey: "assetsEmpleado",
     header: "Usuario",
     cell: ({ row }) => (
       <div className="text-center">{<Link className="hover:font-semibold hover:underline"
         href={`/employees/${row.original.idEmpleado}`}
-      >{row.original.idEmpleado}</Link>}</div>
+      >{`${row.original.assetsEmpleado?.nombre} ${row.original.assetsEmpleado?.apellido}`}</Link>}</div>
     ),
   },
 ];

@@ -8,7 +8,7 @@ import { ERROR_MESSAGES } from "~/lib/errors";
 import { AssetRaw } from "./assets";
 import { CategoryRaw } from "./categories";
 
-type EmployeeRaw = {
+export type EmployeeRaw = {
   id: string,
   nombre: string,
   apellido: string,
@@ -125,7 +125,7 @@ export const employeesRouter = createTRPCRouter({
       }
       const employee: EmployeeWithGroupsRaw = await employeeResponse.json()
       const { grupos, ...rest } = employee
-      console.log(employee)
+      // console.log(employee)
       const groupsIds = grupos.map(group => {
         const { id } = group
         return id.toString()
@@ -139,7 +139,7 @@ export const employeesRouter = createTRPCRouter({
         id: z.string(),
         nombre: z.string(),
         apellido: z.string(),
-        mail: z.string().nullish(),
+        mail: z.string().email().nullish(),
         telefono: z.string().nullish(),
         groupIds: z.array(z.number()),
         habilitado: z.boolean()
@@ -247,6 +247,33 @@ export const employeesRouter = createTRPCRouter({
       })
       return employeesAsOptions
 
+    }),
+  checkId: publicProcedure
+    .input(z.object({
+      id: z.string()
+    }))
+    .query(async ({ input }) => {
+      const employeeResponse = await fetch(`${env.SERVER_URL}/api/AssetsEmpleado/${input.id}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${env.TOKEN_EMPRESA}`,
+          }
+        })
+      // console.log(employeeResponse.status)
+      if (employeeResponse.status === 404) {
+        return true
+      }
+      if (!employeeResponse.ok) {
+        const error = await employeeResponse.text()
+        console.log(`Ocurrió un problema verificando si es único el UID (${input.id}) con el siguiente mensaje de error:`, error)
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: ERROR_MESSAGES.GENERIC_INTERNAL_ERROR
+        })
+      }
+
+      return false
     }),
   groups: groupsRouter
 });

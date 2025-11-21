@@ -6,16 +6,6 @@ import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { api } from "~/trpc/react";
 import { Card } from "~/components/ui/card";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "~/components/ui/alert-dialog";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Checkbox } from "~/components/ui/checkbox";
@@ -23,6 +13,7 @@ import { Employee } from "~/server/api/routers/employees";
 import MultiSelect from "~/components/ui/multiselect";
 import { GroupOption } from "~/server/api/routers/groups";
 import AcceptButton from "~/components/accept-button";
+import CancelButton from "~/components/cancel-button";
 
 interface EmployeeFormProps {
   employee: Employee,
@@ -45,9 +36,26 @@ export default function EmployeeForm({
   const [legajo, setLegajo] = useState<string>();
   const [titulo, setTitulo] = useState<string>();
 
+  const router = useRouter()
+
   const { mutateAsync: EditEmployee, isLoading } = api.employees.edit.useMutation();
+  const { refetch: idIsUnique } = api.employees.checkId.useQuery({ id: id }, { enabled: false })
 
   async function handleChange() {
+    const cleanId = id.trim().split(" ").join("")
+    if (cleanId.length < 3) {
+      toast.error("Por favor asegúrese que el UID tenga al menos 3 caracteres no vacíos.")
+      return
+    }
+    if (!firstName || !lastName) {
+      toast.error("Por favor asegúrese de rellenar todos los campos obligatorios.")
+      return
+    }
+    const { data: isValid } = await idIsUnique()
+    if (!isValid) {
+      toast.error("Este UID ya existe, por favor use uno diferente y único.")
+      return
+    }
     const toAssign: number[] = []
     const toUnassign: number[] = []
     selectedGroups!.forEach(selectedG => {
@@ -62,15 +70,6 @@ export default function EmployeeForm({
         toUnassign.push(parseInt(groupOfEmp))
       }
     })
-    const cleanId = id.trim().split(" ").join("")
-    if (cleanId.length < 3) {
-      toast.error("Por favor asegúrese que el UID tenga al menos 3 caracteres no vacíos.")
-      return
-    }
-    if (!firstName || !lastName) {
-      toast.error("Por favor asegúrese de rellenar todos los campos obligatorios.")
-      return
-    }
     try {
       await EditEmployee({
         id,
@@ -83,6 +82,7 @@ export default function EmployeeForm({
         toUnassign
       });
       toast.success("Empleado modificado correctamente.");
+      router.push("/employees")
     } catch {
       toast.error("Ocurrió un error al intentar modificar el empleado.");
     }
@@ -92,7 +92,7 @@ export default function EmployeeForm({
     <div className="flex justify-center">
       <Card className="p-16 w-[45rem] flex flex-col gap-4">
         <div className="flex items-center gap-2">
-          <Label htmlFor="rfid" className="font-bold">UID</Label>
+          <Label htmlFor="rfid" className="font-bold">UID*</Label>
           <Input
             id="rfid"
             placeholder="UID"
@@ -102,7 +102,7 @@ export default function EmployeeForm({
         </div>
 
         <div className="flex items-center gap-2 flex-1">
-          <Label htmlFor="firstName" className="font-bold">Nombre</Label>
+          <Label htmlFor="firstName" className="font-bold">Nombre*</Label>
           <Input
             id="firstName"
             placeholder="Nombre"
@@ -112,7 +112,7 @@ export default function EmployeeForm({
         </div>
 
         <div className="flex items-center gap-2 flex-1">
-          <Label htmlFor="lastName" className="font-bold">Apellido</Label>
+          <Label htmlFor="lastName" className="font-bold">Apellido*</Label>
           <Input
             id="lastName"
             placeholder="Apellido"
@@ -191,7 +191,11 @@ export default function EmployeeForm({
           <Input disabled={true} />
         </div>
 
-        <div className="flex justify-end">
+        <div className="flex justify-between">
+          <CancelButton
+            onClick={() => { router.push("/employees") }}>
+            Cancelar
+          </CancelButton>
           <AcceptButton isLoading={isLoading} onClick={handleChange} >
             <span>Guardar</span>
           </AcceptButton>
@@ -201,43 +205,3 @@ export default function EmployeeForm({
   )
 }
 
-function DeleteEmployee(props: { employeeId: string }) {
-  const { mutateAsync: deleteEmployee, isLoading } =
-    api.employees.delete.useMutation();
-
-  const router = useRouter();
-
-  const handleDelete: MouseEventHandler<HTMLButtonElement> = (e) => {
-    e.preventDefault();
-    deleteEmployee({ id: props.employeeId }).then(() => {
-      toast.success("Empleado eliminado correctamente");
-      router.push("/employees");
-    });
-  };
-  return (
-    <AlertDialog>
-      <AlertDialogTrigger asChild>
-        <Button variant="destructive" className="w-[160px]">
-          Eliminar empleado
-        </Button>
-      </AlertDialogTrigger>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>
-            ¿Está seguro que desea eliminar al empleado?
-          </AlertDialogTitle>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Cancelar</AlertDialogCancel>
-          <AlertDialogAction
-            className="bg-red-500 hover:bg-red-600 active:bg-red-700"
-            onClick={handleDelete}
-            disabled={isLoading}
-          >
-            Eliminar definitivamente
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
-  );
-}
