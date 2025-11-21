@@ -113,6 +113,7 @@ async function assignAssetToEmployeeGroups({
   const baseURL = `${env.SERVER_URL}/api/AssetsGrupoEmpleados/assetsGrupo/${assign ? "asignar" : "desasignar"}`
   groupIds.forEach(async (groupId) => {
     const endpoint = `${baseURL}/${groupId}`
+    console.log(`Antes de intentar ${assign ? "asignar" : "desasignar"} el asset ${assetId} al grupo ${groupId}`)
     const assignmentResponse = await fetch(endpoint,
       {
         method: "POST",
