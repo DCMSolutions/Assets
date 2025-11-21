@@ -107,6 +107,7 @@ async function assignAssetToEmployeeGroups({
   groupIds,
   assign
 }: { assetId: string, groupIds: number[], assign: boolean }) {
+  console.log(`ENTRÓ A LA FUNCIÓN DE ${assign ? "ASIGNAR" : "DESASIGNAR"}`)
   if (groupIds.length === 0) return
 
   const baseURL = `${env.SERVER_URL}/api/AssetsGrupoEmpleados/assetsGrupo/${assign ? "asignar" : "desasignar"}`
