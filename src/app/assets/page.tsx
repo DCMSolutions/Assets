@@ -14,7 +14,7 @@ export default async function Assets() {
       <div className="flex pl-4 justify-between">
         <Title>Activos</Title>
         <Link href={"/assets/create"} >
-          <Button>Dar de alta usuario</Button>
+          <Button>Crear nuevo activo</Button>
         </Link>
       </div>
       <div>
