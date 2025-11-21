@@ -1,6 +1,7 @@
 import { Title } from "~/components/title";
 import { api } from "~/trpc/server";
 import CreateAssetForm from "./create-asset-form";
+import Link from "next/link";
 
 export default async function CreateAssetPage() {
 
@@ -12,8 +13,10 @@ export default async function CreateAssetPage() {
 
   return (
     <>
-      <div>
-        <Title>Crear nuevo usuario</Title>
+      <div className="flex justify-start">
+        <Title><Link href={"/assets"}>Activos</Link></Title>
+        <Title>{" > "}</Title>
+        <Title>Crear nuevo activo</Title>
       </div>
       <CreateAssetForm
         employeeOptions={employees}

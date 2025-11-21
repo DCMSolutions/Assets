@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import AssetForm from "./asset-form";
 import { AssetWithEmployeesAndGroups } from "~/server/api/routers/assets";
 import DeleteAsset from "./delete-asset-dialog";
+import Link from "next/link";
 
 export default async function AssetPage(props: { params: { assetId: string } }) {
   // const { perms } = await api.user.self.query();
@@ -26,9 +27,10 @@ export default async function AssetPage(props: { params: { assetId: string } }) 
 
   return (
     <>
-      <div className="flex justify-between">
+      <div className="flex justify-start">
+        <Title><Link href={"/assets"}>Activos</Link></Title>
+        <Title>{" > "}</Title>
         <Title>Editar activo</Title>
-        <DeleteAsset assetId={assetWEG.asset.id} />
       </div>
       <AssetForm
         assetWEG={assetWEG}

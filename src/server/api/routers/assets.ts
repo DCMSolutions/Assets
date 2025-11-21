@@ -107,8 +107,8 @@ async function assignAssetToEmployeeGroups({
   groupIds,
   assign
 }: { assetId: string, groupIds: number[], assign: boolean }) {
-  console.log(`ENTRÓ A LA FUNCIÓN DE ${assign ? "ASIGNAR" : "DESASIGNAR"}`)
   if (groupIds.length === 0) return
+  console.log(`ENTRÓ A LA FUNCIÓN DE ${assign ? "ASIGNAR" : "DESASIGNAR"}`)
 
   const baseURL = `${env.SERVER_URL}/api/AssetsGrupoEmpleados/assetsGrupo/${assign ? "asignar" : "desasignar"}`
   groupIds.forEach(async (groupId) => {
@@ -122,6 +122,7 @@ async function assignAssetToEmployeeGroups({
         },
         body: JSON.stringify([assetId])
       })
+    console.log(`Intentó ${assign ? "asignar" : "desasignar"} el asset ${assetId} al grupo ${groupId}`)
     if (!assignmentResponse.ok) {
       const error = await assignmentResponse.text()
       console.log(`Ocurrió un problema al ${assign ? "asignar" : "desasignar"} el activo (tag: ${assetId}) al grupo (id: ${groupId}) con el siguiente mensaje de error:`, error)
