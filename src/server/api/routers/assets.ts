@@ -121,7 +121,8 @@ async function assignAssetToEmployeeGroups({
           Authorization: `Bearer ${env.TOKEN_EMPRESA}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify([assetId])
+        body: JSON.stringify([assetId]),
+        cache: "no-store"
       })
     console.log(`Intentó ${assign ? "asignar" : "desasignar"} el asset ${assetId} al grupo ${groupId}`)
     if (!assignmentResponse.ok) {
