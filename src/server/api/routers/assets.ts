@@ -4,6 +4,7 @@ import { env } from "~/env";
 import { categoriesRouter } from "./categories";
 import { nanoid } from "nanoid";
 import { api } from "~/trpc/server";
+import { EmployeeRaw } from "./employees";
 
 export type AssetRaw = {
   id: string,
@@ -68,7 +69,7 @@ export type AssetEventRaw = {
   estadoNuevo: number | null;
   fechaEvento: string;
   asset: AssetRaw;
-  assetsEmpleado: any | null;
+  assetsEmpleado: EmployeeRaw | null;
 }
 
 export type AssetEventForTable = Omit<AssetEventRaw, "evento"> & { evento: string }
@@ -125,6 +126,7 @@ async function assignAssetToEmployeeGroups({
       console.log(`Ocurrió un problema al ${assign ? "asignar" : "desasignar"} el activo (tag: ${assetId}) al grupo (id: ${groupId}) con el siguiente mensaje de error:`, error)
       return
     }
+    console.log(`Se ${assign ? "asignó" : "desasignó"} correctamente el activo (tag: ${assetId}) al grupo (id: ${groupId}).`)
   })
 
 }
@@ -413,7 +415,7 @@ export const assetsRouter = createTRPCRouter({
         return
       }
       const lockersAndBoxes = await lockersAndBoxesResponse.json()
-      console.dir(lockersAndBoxes)
+      // console.dir(lockersAndBoxes)
       return lockersAndBoxes
     }),
   history: publicProcedure

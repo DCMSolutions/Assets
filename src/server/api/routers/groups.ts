@@ -88,7 +88,7 @@ export const groupsRouter = createTRPCRouter({
           ...rest
         }
       })
-      console.log(groups)
+      // console.log(groups)
       return groups
 
     }),
@@ -102,7 +102,7 @@ export const groupsRouter = createTRPCRouter({
           label: nombre
         } as GroupOption
       })
-      console.log(groupsAsOptions)
+      // console.log(groupsAsOptions)
       return groupsAsOptions
     }),
   getAllForTable: publicProcedure
@@ -150,7 +150,7 @@ export const groupsRouter = createTRPCRouter({
       const { id, ...rest } = rawGroup
       const group: Group = { id: id.toString(), ...rest }
 
-      console.log(group)
+      // console.log(group)
       return group
 
     }),
@@ -265,7 +265,7 @@ export const groupsRouter = createTRPCRouter({
 
       }
       const employees: Employee[] = await employeesResponse.json()
-      console.log(employees)
+      // console.log(employees)
       return employees
 
     })

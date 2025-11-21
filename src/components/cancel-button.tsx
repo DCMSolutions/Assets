@@ -1,21 +1,24 @@
+
 import { Button } from "./ui/button"
 
-interface AcceptButtonProps {
+interface CancelButtonProps {
   onClick: () => void,
   isLoading?: boolean,
+  className?: string,
   children?: React.ReactNode;
 }
 
-export default function AcceptButton({
+export default function CancelButton({
   onClick,
   isLoading = false,
   children
-}: AcceptButtonProps) {
+}: CancelButtonProps) {
   return (
     <Button
       disabled={isLoading}
       onClick={onClick}
-      className="bg-[#307095]"
+      className="bg-gray-200 border text-black"
+
     >
       {children}
     </Button>

@@ -12,9 +12,9 @@ export default async function Employees() {
   return (
     <section className="flex-grow">
       <div className="flex pl-4 justify-between">
-        <Title>Empleados</Title>
+        <Title>Usuarios</Title>
         <Link href={"/employees/create"} >
-          <Button>Dar de alta usuario</Button>
+          <Button>Crear nuevo usuario</Button>
         </Link>
       </div>
       <div>

@@ -10,6 +10,8 @@ import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { GroupOption } from "~/server/api/routers/groups";
 import { api } from "~/trpc/react";
+import { useRouter } from "next/navigation";
+import CancelButton from "~/components/cancel-button";
 
 interface CreateEmployeeProps {
   groupsAsOptions: GroupOption[]
@@ -30,6 +32,9 @@ export default function CreateEmployeeForm({
   const [titulo, setTitulo] = useState<string>();
 
   const { mutateAsync: createEmployee, isLoading } = api.employees.create.useMutation();
+  const { refetch: idIsUnique } = api.employees.checkId.useQuery({ id: id }, { enabled: false })
+
+  const router = useRouter()
 
   async function handleChange() {
     function cleanForm() {
@@ -47,6 +52,11 @@ export default function CreateEmployeeForm({
     }
     if (!firstName || !lastName) {
       toast.error("Por favor asegúrese de rellenar todos los campos obligatorios.")
+      return
+    }
+    const { data: isValid } = await idIsUnique()
+    if (!isValid) {
+      toast.error("Este UID ya existe, por favor use uno diferente y único.")
       return
     }
     try {
@@ -75,7 +85,7 @@ export default function CreateEmployeeForm({
     <div className="flex justify-center">
       <Card className="p-16 w-[45rem] flex flex-col gap-4">
         <div className="flex items-center gap-2">
-          <Label htmlFor="rfid" className="font-bold">UID</Label>
+          <Label htmlFor="rfid" className="font-bold">UID*</Label>
           <Input
             id="rfid"
             placeholder="UID"
@@ -85,7 +95,7 @@ export default function CreateEmployeeForm({
         </div>
 
         <div className="flex items-center gap-2 flex-1">
-          <Label htmlFor="firstName" className="font-bold">Nombre</Label>
+          <Label htmlFor="firstName" className="font-bold">Nombre*</Label>
           <Input
             id="firstName"
             placeholder="Nombre"
@@ -95,7 +105,7 @@ export default function CreateEmployeeForm({
         </div>
 
         <div className="flex items-center gap-2 flex-1">
-          <Label htmlFor="lastName" className="font-bold">Apellido</Label>
+          <Label htmlFor="lastName" className="font-bold">Apellido*</Label>
           <Input
             id="lastName"
             placeholder="Apellido"
@@ -105,11 +115,24 @@ export default function CreateEmployeeForm({
         </div>
 
         <div className="flex items-center gap-2">
-          <Label htmlFor="active" className="font-bold">Habilitado</Label>
-          <Checkbox
-            id="active"
-            defaultChecked
-            onCheckedChange={() => setActive(prev => !prev)}
+          <Label htmlFor="mail" className="font-bold">Email</Label>
+          <Input
+            id="mail"
+            type="email"
+            placeholder="Email"
+            value={mail}
+            onChange={(e) => setMail(e.target.value)}
+          />
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Label htmlFor="phone" className="font-bold">Teléfono</Label>
+          <Input
+            id="phone"
+            type="number"
+            placeholder="Teléfono"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
           />
         </div>
 
@@ -122,6 +145,15 @@ export default function CreateEmployeeForm({
             onChange={setSelectedGroups}
             isLoading={!!groupsAsOptions}
             disabled={isLoading}
+          />
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Label htmlFor="active" className="font-bold">Habilitado</Label>
+          <Checkbox
+            id="active"
+            defaultChecked
+            onCheckedChange={() => setActive(prev => !prev)}
           />
         </div>
 
@@ -140,26 +172,6 @@ export default function CreateEmployeeForm({
         </div>
 
         <div className="flex items-center gap-2">
-          <Label htmlFor="email" className="font-bold">Email</Label>
-          <Input
-            id="email"
-            placeholder="Email"
-            value={mail}
-            onChange={(e) => setMail(e.target.value)}
-          />
-        </div>
-
-        <div className="flex items-center gap-2">
-          <Label htmlFor="phone" className="font-bold">Teléfono</Label>
-          <Input
-            id="phone"
-            placeholder="Teléfono"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-          />
-        </div>
-
-        <div className="flex items-center gap-2">
           <Label htmlFor="titulo" className="font-bold">Título</Label>
           <Input
             id="titulo"
@@ -174,9 +186,13 @@ export default function CreateEmployeeForm({
           <Input disabled={true} />
         </div>
 
-        <div className="flex justify-end">
+        <div className="flex justify-between">
+          <CancelButton
+            onClick={() => { router.push("/employees") }}>
+            Cancelar
+          </CancelButton>
           <AcceptButton isLoading={isLoading} onClick={handleChange} >
-            <span>Crear usuario</span>
+            <span>Crear nuevo usuario</span>
           </AcceptButton>
         </div>
       </Card>
