@@ -325,8 +325,10 @@ export const assetsRouter = createTRPCRouter({
         console.log(`Ocurrió un problema al intentar editar un activo (tag: ${asset.id}) con el siguiente mensaje de error:`, error)
         return
       }
+      console.log("ANTES DE ASIGNAR GRUPOS")
       assignAssetToEmployeeGroups({ assetId: asset.id, groupIds: groupsToAssign, assign: true })
       assignAssetToEmployeeGroups({ assetId: asset.id, groupIds: groupsToUnassign, assign: false })
+      console.log("DESPUÉS DE ASIGNAR GRUPOS")
     }),
   assignToEmployee: publicProcedure
     .input(z.object({
@@ -415,7 +417,7 @@ export const assetsRouter = createTRPCRouter({
         return
       }
       const lockersAndBoxes = await lockersAndBoxesResponse.json()
-      // console.dir(lockersAndBoxes)
+      console.dir(lockersAndBoxes)
       return lockersAndBoxes
     }),
   history: publicProcedure
