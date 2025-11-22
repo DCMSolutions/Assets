@@ -1,10 +1,10 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 import { env } from "~/env";
-import { categoriesRouter } from "./categories";
+import { categoriesRouter, getAllCategories } from "./categories";
 import { nanoid } from "nanoid";
 import { api } from "~/trpc/server";
-import { EmployeeRaw } from "./employees";
+import { EmployeeRaw, getAllEmployees } from "./employees";
 
 export type AssetRaw = {
   id: string,
@@ -161,8 +161,8 @@ export const assetsRouter = createTRPCRouter({
     .query(async () => {
 
       const assets = await getAssets()
-      const categories = await api.assets.categories.getAll.query()
-      const employees = await api.employees.getAll.query()
+      const categories = await getAllCategories()
+      const employees = await getAllEmployees()
 
       const assetsExtended: AssetForTable[] = assets.map((asset) => {
         const { poseedorActual, idCategoria, idEmpleadoAsignado, estado, ...rest } = asset
@@ -333,8 +333,8 @@ export const assetsRouter = createTRPCRouter({
         return
       }
       console.log("ANTES DE ASIGNAR GRUPOS")
-      assignAssetToEmployeeGroups({ assetId: asset.id, groupIds: groupsToAssign, assign: true })
-      assignAssetToEmployeeGroups({ assetId: asset.id, groupIds: groupsToUnassign, assign: false })
+      await assignAssetToEmployeeGroups({ assetId: asset.id, groupIds: groupsToAssign, assign: true })
+      await assignAssetToEmployeeGroups({ assetId: asset.id, groupIds: groupsToUnassign, assign: false })
       console.log("DESPUÉS DE ASIGNAR GRUPOS")
     }),
   assignToEmployee: publicProcedure
@@ -425,7 +425,7 @@ export const assetsRouter = createTRPCRouter({
         return
       }
       const lockersAndBoxes = await lockersAndBoxesResponse.json()
-      console.dir(lockersAndBoxes)
+      // console.dir(lockersAndBoxes)
       return lockersAndBoxes
     }),
   history: publicProcedure

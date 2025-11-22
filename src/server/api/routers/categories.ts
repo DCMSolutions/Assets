@@ -18,33 +18,36 @@ export type CategoryOption = {
   label: string,
 }
 
+export async function getAllCategories() {
+
+  const categoriesResponse = await fetch(`${env.SERVER_URL}/api/AssetsCategoria`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${env.TOKEN_EMPRESA}`,
+      }
+    })
+
+  if (!categoriesResponse.ok) {
+    const error = await categoriesResponse.text()
+    console.log("Ocurrió un problema al pedir la lista de categorías con el siguiente mensaje de error:", error)
+    return
+  }
+  const categories: CategoryRaw[] = await categoriesResponse.json()
+  const categoriesToReturn: Category[] = categories?.map((category) => {
+    return {
+      id: category.id.toString(),
+      nombre: category.nombre
+    }
+  })
+  // console.log(categoriesToReturn)
+  return categoriesToReturn
+}
+
 export const categoriesRouter = createTRPCRouter({
   getAll: publicProcedure
     .query(async () => {
-
-      const categoriesResponse = await fetch(`${env.SERVER_URL}/api/AssetsCategoria`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${env.TOKEN_EMPRESA}`,
-          }
-        })
-
-      if (!categoriesResponse.ok) {
-        const error = await categoriesResponse.text()
-        console.log("Ocurrió un problema al pedir la lista de categorías con el siguiente mensaje de error:", error)
-        return
-      }
-      const categories: CategoryRaw[] = await categoriesResponse.json()
-      const categoriesToReturn: Category[] = categories?.map((category) => {
-        return {
-          id: category.id.toString(),
-          nombre: category.nombre
-        }
-      })
-      // console.log(categoriesToReturn)
-      return categoriesToReturn
-
+      return await getAllCategories()
     }),
   getById: publicProcedure
     .input(z.object({
