@@ -73,7 +73,7 @@ export default function CreateEmployeeForm({
         groupIds,
         habilitado: active,
       });
-      toast.success("Empleado modificado correctamente.");
+      toast.success("Empleado creado correctamente.");
       cleanForm()
     } catch {
       toast.error("Ocurrió un error al intentar modificar el empleado.");
