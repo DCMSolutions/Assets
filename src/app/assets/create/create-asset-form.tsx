@@ -16,6 +16,8 @@ import { GroupOption } from "~/server/api/routers/groups";
 import MultiSelect from "~/components/ui/multiselect";
 import { Card } from "~/components/ui/card";
 import AcceptButton from "~/components/accept-button";
+import { Button } from "~/components/ui/button";
+import { RefreshCw } from "lucide-react";
 
 interface AddAssetDialogProps {
   categoryOptions: CategoryOption[],
@@ -35,6 +37,7 @@ export default function CreateAssetForm({
   const { mutateAsync: createAsset, isLoading } = api.assets.create.useMutation();
 
   const [id, setId] = useState<string>("");
+  const [tagDisabled, setTagDisabled] = useState<boolean>(true);
   const [serial, setSerial] = useState<string>("");
   const [modelo, setModelo] = useState<string>("");
   const [idCategoria, setIdCategoria] = useState<string>("");
@@ -64,7 +67,7 @@ export default function CreateAssetForm({
   }
 
   useEffect(() => {
-    const tag = nanoid()
+    const tag = nanoid(10)
     setId(tag)
   }, [])
 
@@ -124,7 +127,20 @@ export default function CreateAssetForm({
             id="id"
             value={id}
             placeholder="Generando TAG"
+            disabled={tagDisabled}
+            onChange={(e) => setId(e.target.value)}
           />
+          <Button onClick={() => {
+            const tag = nanoid(10)
+            setId(tag)
+          }}>
+            <RefreshCw />
+          </Button>
+          <Checkbox
+            id="tag-modify"
+            onCheckedChange={() => setTagDisabled(prev => !prev)}
+          />
+          <Label htmlFor="tag-modify" className="font-bold">Elegir TAG manualmente</Label>
         </div>
 
         <div className="flex items-center gap-2">
