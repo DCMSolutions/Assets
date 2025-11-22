@@ -9,6 +9,8 @@ import {
   ColumnFiltersState,
   useReactTable,
   Row,
+  ColumnSort,
+  getSortedRowModel,
 } from "@tanstack/react-table";
 
 import { TableCell } from "~/components/ui/table";
@@ -35,15 +37,19 @@ export function DataTable<TData extends { id: string }>({
   pathToRowPage
 }: DataTableProps<TData, unknown>) {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [sorting, setSorting] = useState<ColumnSort[]>([])
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    getSortedRowModel: getSortedRowModel(),
     onColumnFiltersChange: setColumnFilters,
+    onSortingChange: setSorting,
     state: {
       columnFilters,
+      sorting
     },
   });
 
@@ -56,13 +62,11 @@ export function DataTable<TData extends { id: string }>({
 
   return (
     <div className="w-full p-4 space-y-4">
-      {/* Barra de búsqueda 
       <TableToolbar
         table={table}
         searchColumn={"client"}
         columns={table.getAllColumns()}
       />
-      */}
       <div className="overflow-x-auto rounded-md border shadow-md">
         <Table className="min-w-full divide-y divide-gray-200">
           <TableHeader>
@@ -73,12 +77,21 @@ export function DataTable<TData extends { id: string }>({
                     key={header.id}
                     className="text-center text-sm font-medium text-gray-500 uppercase tracking-wider"
                   >
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
+                    {header.isPlaceholder ? null : (
+                      <div
+                        onClick={header.column.getToggleSortingHandler()}
+                        className="flex items-center justify-center gap-1 cursor-pointer select-none"
+                      >
+                        {flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                        {{
+                          asc: "▲",
+                          desc: "▼",
+                        }[header.column.getIsSorted() as string] ?? null}
+                      </div>
+                    )}
                   </TableHead>
                 ))}
               </TableRow>
