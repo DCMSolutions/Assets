@@ -119,7 +119,6 @@ export default function MultiSelect({
         </PopoverTrigger>
         <PopoverContent className="w-full p-0" align="start">
           <Command>
-            <CommandInput autoFocus={false} placeholder="Search items..." />
             <CommandList>
               <CommandEmpty className="p-0">
                 {isLoading ? (

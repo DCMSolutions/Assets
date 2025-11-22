@@ -1,10 +1,10 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 import { env } from "~/env";
-import { categoriesRouter } from "./categories";
+import { categoriesRouter, getAllCategories } from "./categories";
 import { nanoid } from "nanoid";
 import { api } from "~/trpc/server";
-import { EmployeeRaw } from "./employees";
+import { EmployeeRaw, getAllEmployees } from "./employees";
 
 export type AssetRaw = {
   id: string,
@@ -89,7 +89,8 @@ async function getAssets() {
       method: "GET",
       headers: {
         Authorization: `Bearer ${env.TOKEN_EMPRESA}`,
-      }
+      },
+      cache: "no-store"
     })
 
   if (!assetsResponse.ok) {
@@ -108,10 +109,12 @@ async function assignAssetToEmployeeGroups({
   assign
 }: { assetId: string, groupIds: number[], assign: boolean }) {
   if (groupIds.length === 0) return
+  console.log(`ENTRÓ A LA FUNCIÓN DE ${assign ? "ASIGNAR" : "DESASIGNAR"}`)
 
   const baseURL = `${env.SERVER_URL}/api/AssetsGrupoEmpleados/assetsGrupo/${assign ? "asignar" : "desasignar"}`
-  groupIds.forEach(async (groupId) => {
+  for (const groupId of groupIds) {
     const endpoint = `${baseURL}/${groupId}`
+    console.log(`Antes de intentar ${assign ? "asignar" : "desasignar"} el asset ${assetId} al grupo ${groupId}`)
     const assignmentResponse = await fetch(endpoint,
       {
         method: "POST",
@@ -119,15 +122,17 @@ async function assignAssetToEmployeeGroups({
           Authorization: `Bearer ${env.TOKEN_EMPRESA}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify([assetId])
+        body: JSON.stringify([assetId]),
+        cache: "no-store"
       })
+    console.log(`Intentó ${assign ? "asignar" : "desasignar"} el asset ${assetId} al grupo ${groupId}`)
     if (!assignmentResponse.ok) {
       const error = await assignmentResponse.text()
       console.log(`Ocurrió un problema al ${assign ? "asignar" : "desasignar"} el activo (tag: ${assetId}) al grupo (id: ${groupId}) con el siguiente mensaje de error:`, error)
       return
     }
     console.log(`Se ${assign ? "asignó" : "desasignó"} correctamente el activo (tag: ${assetId}) al grupo (id: ${groupId}).`)
-  })
+  }
 
 }
 
@@ -156,8 +161,8 @@ export const assetsRouter = createTRPCRouter({
     .query(async () => {
 
       const assets = await getAssets()
-      const categories = await api.assets.categories.getAll.query()
-      const employees = await api.employees.getAll.query()
+      const categories = await getAllCategories()
+      const employees = await getAllEmployees()
 
       const assetsExtended: AssetForTable[] = assets.map((asset) => {
         const { poseedorActual, idCategoria, idEmpleadoAsignado, estado, ...rest } = asset
@@ -189,7 +194,8 @@ export const assetsRouter = createTRPCRouter({
           method: "GET",
           headers: {
             Authorization: `Bearer ${env.TOKEN_EMPRESA}`,
-          }
+          },
+          cache: "no-store"
         })
 
       if (!assetResponse.ok) {
@@ -224,7 +230,8 @@ export const assetsRouter = createTRPCRouter({
           method: "GET",
           headers: {
             Authorization: `Bearer ${env.TOKEN_EMPRESA}`,
-          }
+          },
+          cache: "no-store"
         })
 
       if (!assetResponse.ok) {
@@ -325,8 +332,10 @@ export const assetsRouter = createTRPCRouter({
         console.log(`Ocurrió un problema al intentar editar un activo (tag: ${asset.id}) con el siguiente mensaje de error:`, error)
         return
       }
-      assignAssetToEmployeeGroups({ assetId: asset.id, groupIds: groupsToAssign, assign: true })
-      assignAssetToEmployeeGroups({ assetId: asset.id, groupIds: groupsToUnassign, assign: false })
+      console.log("ANTES DE ASIGNAR GRUPOS")
+      await assignAssetToEmployeeGroups({ assetId: asset.id, groupIds: groupsToAssign, assign: true })
+      await assignAssetToEmployeeGroups({ assetId: asset.id, groupIds: groupsToUnassign, assign: false })
+      console.log("DESPUÉS DE ASIGNAR GRUPOS")
     }),
   assignToEmployee: publicProcedure
     .input(z.object({
@@ -407,7 +416,8 @@ export const assetsRouter = createTRPCRouter({
           method: "GET",
           headers: {
             Authorization: `Bearer ${env.TOKEN_EMPRESA}`,
-          }
+          },
+          cache: "no-store"
         })
       if (!lockersAndBoxesResponse.ok) {
         const error = await lockersAndBoxesResponse.text()
@@ -425,7 +435,8 @@ export const assetsRouter = createTRPCRouter({
           method: "GET",
           headers: {
             Authorization: `Bearer ${env.TOKEN_EMPRESA}`,
-          }
+          },
+          cache: "no-store"
         })
       if (!historyResponse.ok) {
         const error = await historyResponse.text()

@@ -37,34 +37,63 @@ export type EmployeeOption = {
   label: string
 }
 
+export async function getAllEmployees() {
+  const employeesResponse = await fetch(`${env.SERVER_URL}/api/AssetsEmpleado`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${env.TOKEN_EMPRESA}`,
+      },
+      cache: "no-store"
+    })
+
+  if (!employeesResponse.ok) {
+    const error = await employeesResponse.text()
+    console.log("Ocurrió un problema pidiendo la lista completa de empleados con el siguiente mensaje de error:", error)
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: ERROR_MESSAGES.GENERIC_INTERNAL_ERROR
+    })
+  }
+  const employees: EmployeeRaw[] = await employeesResponse.json()
+  // console.log(employees)
+  return employees
+}
+
+async function getEmployeeById(id: string) {
+  const employeeResponse = await fetch(`${env.SERVER_URL}/api/AssetsEmpleado/${id}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${env.TOKEN_EMPRESA}`,
+      },
+      cache: "no-store"
+    })
+
+  if (!employeeResponse.ok) {
+    const error = await employeeResponse.text()
+    console.log(`Ocurrió un problema pidiendo un empleado (id: ${id}) con el siguiente mensaje de error:`, error)
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: ERROR_MESSAGES.GENERIC_INTERNAL_ERROR
+    })
+  }
+  const employee: EmployeeRaw = await employeeResponse.json()
+  // console.log(employee)
+  return employee
+
+}
+
 export const employeesRouter = createTRPCRouter({
   getAll: publicProcedure
     .query(async () => {
 
-      const employeesResponse = await fetch(`${env.SERVER_URL}/api/AssetsEmpleado`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${env.TOKEN_EMPRESA}`,
-          }
-        })
-
-      if (!employeesResponse.ok) {
-        const error = await employeesResponse.text()
-        console.log("Ocurrió un problema pidiendo la lista completa de empleados con el siguiente mensaje de error:", error)
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: ERROR_MESSAGES.GENERIC_INTERNAL_ERROR
-        })
-      }
-      const employees: EmployeeRaw[] = await employeesResponse.json()
-      // console.log(employees)
-      return employees
+      return getAllEmployees()
 
     }),
   getAllForTable: publicProcedure
     .query(async () => {
-      const allEmployees = await api.employees.getAll.query()
+      const allEmployees = await getAllEmployees()
       const employeesForTable: EmployeeForTable[] = allEmployees.map(e => {
         return {
           id: e.id,
@@ -81,26 +110,7 @@ export const employeesRouter = createTRPCRouter({
       id: z.string()
     }))
     .query(async ({ input }) => {
-      const employeeResponse = await fetch(`${env.SERVER_URL}/api/AssetsEmpleado/${input.id}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${env.TOKEN_EMPRESA}`,
-          }
-        })
-
-      if (!employeeResponse.ok) {
-        const error = await employeeResponse.text()
-        console.log(`Ocurrió un problema pidiendo un empleado (id: ${input.id}) con el siguiente mensaje de error:`, error)
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: ERROR_MESSAGES.GENERIC_INTERNAL_ERROR
-        })
-      }
-      const employee: EmployeeRaw = await employeeResponse.json()
-      // console.log(employee)
-      return employee
-
+      return await getEmployeeById(input.id)
     }),
   getByIdWithGroups: publicProcedure
     .input(z.object({
@@ -112,7 +122,8 @@ export const employeesRouter = createTRPCRouter({
           method: "GET",
           headers: {
             Authorization: `Bearer ${env.TOKEN_EMPRESA}`,
-          }
+          },
+          cache: "no-store"
         })
 
       if (!employeeResponse.ok) {
@@ -240,7 +251,7 @@ export const employeesRouter = createTRPCRouter({
   getAllAsOptions: publicProcedure
     .query(async () => {
 
-      const employees = await api.employees.getAll.query()
+      const employees = await getAllEmployees()
 
       const employeesAsOptions: EmployeeOption[] = employees?.map(e => {
         return { value: e.id, label: e.nombre }
@@ -258,7 +269,8 @@ export const employeesRouter = createTRPCRouter({
           method: "GET",
           headers: {
             Authorization: `Bearer ${env.TOKEN_EMPRESA}`,
-          }
+          },
+          cache: "no-store"
         })
       // console.log(employeeResponse.status)
       if (employeeResponse.status === 404) {

@@ -1,23 +1,12 @@
 "use client";
 
-import { Loader2Icon, PlusCircleIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import Selector from "~/components/selector";
-import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "~/components/ui/dialog";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { asTRPCError } from "~/lib/errors";
-import { AssetState } from "~/server/api/routers/assets";
 import { CategoryOption } from "~/server/api/routers/categories";
 import { EmployeeOption } from "~/server/api/routers/employees";
 import { api } from "~/trpc/react";
@@ -74,8 +63,6 @@ export default function CreateAssetForm({
     return boxesAsOptions
   }
 
-  const router = useRouter();
-
   useEffect(() => {
     const tag = nanoid()
     setId(tag)
@@ -92,6 +79,20 @@ export default function CreateAssetForm({
       ? null
       : idEmpleadoAsignado
     const groupsToAssign = selectedGroups.map(group => parseInt(group))
+    function cleanForm() {
+      setId("")
+      setSerial("")
+      setModelo("")
+      setIdCategoria("")
+      setIdEmpleadoAsignado("")
+      setSelectedGroups([])
+      setIdBoxAsignado("")
+      setNroSerieLocker("")
+      setEstado("0")
+      setActive(true)
+      setBoxOptions([])
+      setBoxDisabled(true)
+    }
     try {
       await createAsset({
         id: id!,
@@ -107,7 +108,7 @@ export default function CreateAssetForm({
       });
 
       toast.success("Activo agregado correctamente");
-      router.refresh();
+      cleanForm()
     } catch (e) {
       const error = asTRPCError(e)!;
       toast.error(error.message);
