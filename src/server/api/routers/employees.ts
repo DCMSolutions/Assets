@@ -87,9 +87,7 @@ async function getEmployeeById(id: string) {
 export const employeesRouter = createTRPCRouter({
   getAll: publicProcedure
     .query(async () => {
-
-      return getAllEmployees()
-
+      return await getAllEmployees()
     }),
   getAllForTable: publicProcedure
     .query(async () => {
