@@ -127,9 +127,7 @@ export default function AssetForm({
       }
 
       toast.success("Activo modificado correctamente");
-      setTimeout(() => {
-        router.push("/assets");
-      }, 1000)
+      router.push("/assets");
     } catch (e) {
       const error = asTRPCError(e)!;
       toast.error(error.message);
