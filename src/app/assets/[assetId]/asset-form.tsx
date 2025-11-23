@@ -144,6 +144,7 @@ export default function AssetForm({
             value={id}
             disabled
           />
+          <PrintQRDialog value={id} label={`N.º de serie: ${serial}`} />
         </div>
 
         <div className="flex items-center gap-2">

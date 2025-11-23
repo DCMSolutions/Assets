@@ -47,17 +47,15 @@ export function PrintQRDialog({
       <DialogContent
         className="flex flex-col items-center justify-center gap-3 p-6 print-visible bg-white border-none shadow-none"
       >
-        <DialogHeader className="print:hidden">
+        <DialogHeader >
           <DialogTitle className="text-center">
             {label ?? "Código QR"}
           </DialogTitle>
         </DialogHeader>
 
-        <QRCodeCanvas value={value} size={size} />
+        <QRCodeCanvas value={value} size={size} level="H" />
 
-        {label && (
-          <p className="text-sm text-gray-600 text-center">{label}</p>
-        )}
+        <p className="text-sm text-gray-600 text-center">{value}</p>
 
         <Button
           variant="secondary"
