@@ -67,7 +67,7 @@ export default function MultiSelect({
         >
           <div className="flex justify-between flex-1 overflow-hidden">
             <div
-              className="flex gap-1 flex-1 py-2 px-3 overflow-x-auto"
+              className="flex flex-wrap gap-1 flex-1 py-2 px-3 overflow-x-auto"
               style={{
                 scrollbarWidth: "thin",
                 scrollbarColor: "hsl(var(--border)) transparent",

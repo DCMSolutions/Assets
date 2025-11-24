@@ -1,10 +1,12 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 import { env } from "~/env";
-import { Employee, EmployeeOption } from "./employees";
+import { Employee, EmployeeOption, EmployeeRaw } from "./employees";
 import { TRPCError } from "@trpc/server";
 import { ERROR_MESSAGES } from "~/lib/errors";
 import { api } from "~/trpc/server";
+import { AssetRaw } from "./assets";
+import { CategoryRaw } from "./categories";
 
 export type GroupRaw = {
   id: number,
@@ -12,9 +14,9 @@ export type GroupRaw = {
   descripcion: string | null,
   esMantenimiento: boolean,
   esAdministrador: boolean,
-  assetsAsignados: string[],
-  categoriasAssetsAsignadas: string[],
-  empleadosAsignados: string[]
+  assetsAsignados: AssetRaw[],
+  categoriasAssetsAsignadas: CategoryRaw[],
+  empleadosAsignados: EmployeeRaw[]
 }
 
 export type Group = Omit<GroupRaw, "id"> & { id: string }
@@ -147,8 +149,12 @@ export const groupsRouter = createTRPCRouter({
 
       }
       const rawGroup: GroupRaw = await groupResponse.json()
-      const { id, ...rest } = rawGroup
-      const group: Group = { id: id.toString(), ...rest }
+      const { id, empleadosAsignados, ...rest } = rawGroup
+      const group: Omit<Group, "empleadosAsignados"> & { empleados: string[] } = {
+        id: id.toString(),
+        empleados: empleadosAsignados.map(e => e.id),
+        ...rest
+      }
 
       // console.log(group)
       return group

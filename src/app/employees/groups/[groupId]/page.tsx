@@ -3,6 +3,7 @@ import { api } from "~/trpc/server";
 import { PERMISO_ADMIN, tienePermiso } from "~/lib/permisos";
 import { redirect } from "next/navigation";
 import GroupForm from "./group-form";
+import Link from "next/link";
 
 export default async function GroupPage(props: { params: { groupId: string } }) {
   // const { perms } = await api.user.self.query();
@@ -16,5 +17,16 @@ export default async function GroupPage(props: { params: { groupId: string } }) 
     return <Title>Este grupo ya no existe</Title>;
   }
 
-  return <GroupForm group={group} />;
+  const employeeOptions = await api.employees.getAllAsOptions.query()
+
+  return (
+    <>
+      <div className="flex justify-start">
+        <Title><Link href={"/employees/groups"}>Grupos de usuarios</Link></Title>
+        <Title>{" > "}</Title>
+        <Title>Editar grupo</Title>
+      </div>
+      <GroupForm group={group} employeeOptions={employeeOptions} />
+    </>
+  )
 }

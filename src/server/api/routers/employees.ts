@@ -103,6 +103,17 @@ export const employeesRouter = createTRPCRouter({
       })
       return employeesForTable
     }),
+  getAllAsOptions: publicProcedure
+    .query(async () => {
+
+      const employees = await getAllEmployees()
+
+      const employeesAsOptions: EmployeeOption[] = employees?.map(e => {
+        return { value: e.id, label: e.nombre }
+      })
+      return employeesAsOptions
+
+    }),
   getById: publicProcedure
     .input(z.object({
       id: z.string()
@@ -245,17 +256,6 @@ export const employeesRouter = createTRPCRouter({
         })
 
       }
-    }),
-  getAllAsOptions: publicProcedure
-    .query(async () => {
-
-      const employees = await getAllEmployees()
-
-      const employeesAsOptions: EmployeeOption[] = employees?.map(e => {
-        return { value: e.id, label: e.nombre }
-      })
-      return employeesAsOptions
-
     }),
   checkId: publicProcedure
     .input(z.object({

@@ -23,46 +23,49 @@ import { Group } from "~/server/api/routers/groups";
 import MultiSelect from "~/components/ui/multiselect";
 import { Checkbox } from "~/components/ui/checkbox";
 import { Label } from "~/components/ui/label";
+import { EmployeeOption } from "~/server/api/routers/employees";
+import CancelButton from "~/components/cancel-button";
+import AcceptButton from "~/components/accept-button";
 
-export default function GroupForm({ group }: { group: Group }) {
+interface GroupFormDrops {
+  group: Omit<Group, "empleadosAsignados"> & { empleados: string[] },
+  employeeOptions: EmployeeOption[]
+}
+
+export default function GroupForm({
+  group,
+  employeeOptions
+}: GroupFormDrops) {
   const { mutateAsync: editGroup, isLoading: loadingMutation } = api.employees.groups.edit.useMutation();
 
-  const { data: employeeList, isLoading: loadingEmployees } = api.employees.getAll.useQuery()
-  const { data: groupEmployeeList, isLoading: loadingGroupEmployees } =
-    api.employees.groups.getEmployees.useQuery({ id: parseInt(group.id) })
-
-  const employeeOptions = employeeList ? employeeList.map((employee) => {
-    return {
-      label: employee.nombre,
-      value: employee.id
-    }
-  }) : undefined
+  // const { data: groupEmployeeList, isLoading: loadingGroupEmployees } =
+  //   api.employees.groups.getEmployees.useQuery({ id: parseInt(group.id) })
 
   const [name, setName] = useState(group?.nombre!);
-  const [selectedEmployees, setSelectedEmployees] = useState<string[]>([])
+  const [selectedEmployees, setSelectedEmployees] = useState<string[]>(group.empleados)
   const [isAdmin, setIsAdmin] = useState<boolean>(group.esAdministrador)
   const [isService, setIsService] = useState<boolean>(group.esMantenimiento)
 
   const router = useRouter();
 
-  useEffect(() => {
-    if (loadingGroupEmployees) return
-    setSelectedEmployees(groupEmployeeList!.map(e => e.id))
-  }, [loadingGroupEmployees, groupEmployeeList])
+  // useEffect(() => {
+  //   if (loadingGroupEmployees) return
+  //   setSelectedEmployees(groupEmployeeList!.map(e => e.id))
+  // }, [loadingGroupEmployees, groupEmployeeList])
 
-  async function handleChange() {
+  async function handleEdit() {
     const toAssign: string[] = []
     const toUnassign: string[] = []
-    selectedEmployees!.forEach(selectedEmp => {
-      const employeeInGroup = groupEmployeeList!.some(groupEmp => groupEmp.id === selectedEmp)
+    selectedEmployees.forEach(selectedEmp => {
+      const employeeInGroup = group.empleados.some(groupEmp => groupEmp === selectedEmp)
       if (!employeeInGroup) {
         toAssign.push(selectedEmp)
       }
     })
-    groupEmployeeList!.forEach(empInGroup => {
-      const employeeNotInGroup = selectedEmployees!.some(selectedEmp => selectedEmp === empInGroup.id)
+    group.empleados.forEach(empInGroup => {
+      const employeeNotInGroup = selectedEmployees!.some(selectedEmp => selectedEmp === empInGroup)
       if (!employeeNotInGroup) {
-        toUnassign.push(empInGroup.id)
+        toUnassign.push(empInGroup)
       }
     })
 
@@ -76,65 +79,58 @@ export default function GroupForm({ group }: { group: Group }) {
         mantenimiento: isService
       });
       toast.success("Grupo modificado correctamente.");
-      router.refresh();
+      router.push("/employees/groups");
     } catch {
       toast.error("Ocurrió un error al intentar modificar el grupo.");
     }
   }
 
   return (
-    <>
-      <section className="space-y-2">
-        <div className="flex justify-between mr-4">
-          <Title>Modificar grupo</Title>
-          <Button disabled={loadingMutation || loadingGroupEmployees} onClick={handleChange}>
-            {loadingMutation ? (
-              <Loader2 className="mr-2 animate-spin" />
-            ) : (
-              <CheckIcon className="mr-2" />
-            )}
-            Aplicar cambios
-          </Button>
+    <div className="flex justify-center">
+      <Card className="p-16 w-[45rem] flex flex-col gap-4">
+        <div className="flex items-center gap-2 flex-1">
+          <Label htmlFor="name" className="font-bold">Nombre de grupo*</Label>
+          <Input
+            id="name"
+            placeholder="Nombre"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
         </div>
 
-        <Card className="p-5">
-          <div>
-            <Input
-              id="name"
-              placeholder="Nombre"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-          </div>
-          <div className="flex flex-col gap-6 ">
-            <MultiSelect
-              options={employeeOptions}
-              placeholder={
-                loadingEmployees || loadingGroupEmployees
-                  ? "Cargando empleados..."
-                  : "Seleccione empleados"
-
-              }
-              value={selectedEmployees}
-              onChange={setSelectedEmployees}
-              isLoading={loadingGroupEmployees || loadingEmployees}
-              disabled={loadingMutation}
-            />
-            <div>
-              <Checkbox id="admin" checked={isAdmin} onCheckedChange={() => setIsAdmin(prev => !prev)} />
-              <Label className="pl-2" htmlFor="admin">Grupo administrador</Label>
-            </div>
-            <div>
-              <Checkbox id="service" checked={isService} onCheckedChange={() => setIsService(prev => !prev)} />
-              <Label className="pl-2" htmlFor="service">Grupo de mantenimiento</Label>
-            </div>
-          </div>
-        </Card>
-        <div className="flex flex-row-reverse">
-          <DeleteGroup groupId={group.id!} />
+        <div>
+          <Checkbox id="admin" checked={isAdmin} onCheckedChange={() => setIsAdmin(prev => !prev)} />
+          <Label className="pl-2" htmlFor="admin">es grupo administrador</Label>
         </div>
-      </section>
-    </>
+
+        <div>
+          <Checkbox id="service" checked={isService} onCheckedChange={() => setIsService(prev => !prev)} />
+          <Label className="pl-2" htmlFor="service">es grupo de mantenimiento</Label>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Label className="font-bold">Usuarios del grupo</Label>
+          <MultiSelect
+            options={employeeOptions}
+            placeholder={"Asignar a grupos"}
+            value={selectedEmployees}
+            onChange={setSelectedEmployees}
+            isLoading={!!employeeOptions}
+            disabled={loadingMutation}
+          />
+        </div>
+
+        <div className="flex justify-between">
+          <CancelButton
+            onClick={() => { router.push("/employees/groups") }}>
+            Cancelar
+          </CancelButton>
+          <AcceptButton isLoading={loadingMutation} onClick={handleEdit} >
+            <span>Guardar</span>
+          </AcceptButton>
+        </div>
+      </Card>
+    </div>
   );
 }
 

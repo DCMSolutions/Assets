@@ -1,8 +1,9 @@
 import { Title } from "~/components/title";
 import { groupsTableColumns } from "./columns";
 import { api } from "~/trpc/server";
-import { AddGroupDialog } from "./add-group-dialog";
 import { DataTable } from "~/components/generic-table";
+import Link from "next/link";
+import { Button } from "~/components/ui/button";
 
 export default async function Groups() {
 
@@ -11,8 +12,10 @@ export default async function Groups() {
   return (
     <section className="flex-grow">
       <div className="flex pl-4 justify-between">
-        <Title>Groups</Title>
-        <AddGroupDialog />
+        <Title>Grupos de usuarios</Title>
+        <Link href={"/employees/groups/create"} >
+          <Button>Crear nuevo grupo</Button>
+        </Link>
       </div>
       <div>
         <DataTable columns={groupsTableColumns} data={groups!} pathToRowPage="/employees/groups" />
