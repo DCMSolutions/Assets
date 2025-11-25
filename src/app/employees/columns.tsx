@@ -8,6 +8,7 @@ export const employeesTableColumns: ColumnDef<EmployeeForTable>[] = [
   {
     accessorKey: "id",
     header: "UID",
+    sortingFn: "alphanumeric",
     cell: ({ row }) => (
       <div className="text-center">{row.getValue("id") || "-"}</div>
     ),

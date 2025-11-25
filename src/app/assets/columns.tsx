@@ -19,6 +19,7 @@ export const assetsTableColumns: ColumnDef<AssetForTable>[] = [
   {
     accessorKey: "id",
     header: "TAG",
+    sortingFn: "alphanumeric",
     cell: ({ row }) => (
       <div className="text-center">{row.getValue("id") || "-"}</div>
     ),
