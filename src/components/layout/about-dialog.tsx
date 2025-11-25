@@ -14,8 +14,8 @@ export default function AboutDialog() {
           <DialogTitle>Assets</DialogTitle>
         </DialogHeader>
 
-        <p>Versión 0.7</p>
-        <p>Fecha: 20 de noviembre de 2025</p>
+        <p>Versión 0.8</p>
+        <p>Fecha: 25 de noviembre de 2025</p>
       </DialogContent>
     </Dialog>
   );
