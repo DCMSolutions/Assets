@@ -4,6 +4,7 @@ import { assetsTableColumns } from "./columns";
 import { api } from "~/trpc/server";
 import Link from "next/link";
 import { Button } from "~/components/ui/button";
+import { DataTable } from "~/components/generic-table";
 
 export default async function Assets() {
 
@@ -18,7 +19,7 @@ export default async function Assets() {
         </Link>
       </div>
       <div>
-        <AssetsDataTable columns={assetsTableColumns} data={assets!} />
+        <DataTable columns={assetsTableColumns} data={assets!} pathToRowPage="/assets" />
       </div>
     </div>
   );
