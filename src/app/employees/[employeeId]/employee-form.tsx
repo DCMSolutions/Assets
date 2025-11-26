@@ -39,21 +39,10 @@ export default function EmployeeForm({
   const router = useRouter()
 
   const { mutateAsync: EditEmployee, isLoading } = api.employees.edit.useMutation();
-  const { refetch: idIsUnique } = api.employees.checkId.useQuery({ id: id }, { enabled: false })
 
   async function handleChange() {
-    const cleanId = id.trim().split(" ").join("")
-    if (cleanId.length < 3) {
-      toast.error("Por favor asegúrese que el UID tenga al menos 3 caracteres no vacíos.")
-      return
-    }
     if (!firstName || !lastName) {
       toast.error("Por favor asegúrese de rellenar todos los campos obligatorios.")
-      return
-    }
-    const { data: isValid } = await idIsUnique()
-    if (!isValid) {
-      toast.error("Este UID ya existe, por favor use uno diferente y único.")
       return
     }
     const toAssign: number[] = []
@@ -97,7 +86,7 @@ export default function EmployeeForm({
             id="rfid"
             placeholder="UID"
             value={id}
-            onChange={() => { return }}
+            disabled
           />
         </div>
 

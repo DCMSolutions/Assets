@@ -18,6 +18,8 @@ import { Card } from "~/components/ui/card";
 import AcceptButton from "~/components/accept-button";
 import { Button } from "~/components/ui/button";
 import { RefreshCw } from "lucide-react";
+import CancelButton from "~/components/cancel-button";
+import { useRouter } from "next/navigation";
 
 interface AddAssetDialogProps {
   categoryOptions: CategoryOption[],
@@ -52,6 +54,9 @@ export default function CreateAssetForm({
   const [boxOptions, setBoxOptions] = useState<{ value: string, label: string }[]>([]);
   const [boxDisabled, setBoxDisabled] = useState<boolean>(true);
 
+  const { refetch: idIsUnique } = api.assets.checkId.useQuery({ id: id }, { enabled: false })
+  const router = useRouter()
+
   const lockerOptions = lockersAndBoxes
     ? lockersAndBoxes.map(item => {
       return { value: item.nroSerieLocker, label: item.nroSerieLocker }
@@ -72,6 +77,11 @@ export default function CreateAssetForm({
   }, [])
 
   async function handleCreate() {
+    const { data: isValid } = await idIsUnique()
+    if (!isValid) {
+      toast.error("Este TAG ya existe, por favor introduzca uno diferente y único o genere uno aleatorio.")
+      return
+    }
     const box = idBoxAsignado === "" || idBoxAsignado === " "
       ? null
       : parseInt(idBoxAsignado)
@@ -122,7 +132,7 @@ export default function CreateAssetForm({
     <div className="flex justify-center">
       <Card className="p-16 w-[45rem] flex flex-col gap-4">
         <div className="flex items-center gap-2">
-          <Label htmlFor="id" className="font-bold">TAG</Label>
+          <Label htmlFor="id" className="font-bold">TAG*</Label>
           <Input
             id="id"
             value={id}
@@ -163,7 +173,7 @@ export default function CreateAssetForm({
         </div>
 
         <div className="flex items-center gap-2 flex-1">
-          <Label className="font-bold">Categoría</Label>
+          <Label className="font-bold">Categoría*</Label>
           <Selector
             options={categories}
             value={idCategoria}
@@ -229,7 +239,7 @@ export default function CreateAssetForm({
         </div>
 
         <div className="flex items-center gap-2">
-          <Label className="font-bold">Estado</Label>
+          <Label className="font-bold">Estado*</Label>
           <Selector
             options={stateOptions}
             value={estado}
@@ -249,9 +259,13 @@ export default function CreateAssetForm({
           />
         </div>
 
-        <div className="flex justify-end">
+        <div className="flex justify-between">
+          <CancelButton
+            onClick={() => { router.push("/assets") }}>
+            Cancelar
+          </CancelButton>
           <AcceptButton isLoading={isLoading} onClick={handleCreate}>
-            <span>Crear activo</span>
+            <span>Guardar</span>
           </AcceptButton>
         </div>
       </Card>

@@ -192,7 +192,7 @@ export default function CreateEmployeeForm({
             Cancelar
           </CancelButton>
           <AcceptButton isLoading={isLoading} onClick={handleChange} >
-            <span>Crear nuevo usuario</span>
+            <span>Guardar</span>
           </AcceptButton>
         </div>
       </Card>
