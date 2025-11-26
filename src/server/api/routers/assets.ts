@@ -3,8 +3,9 @@ import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 import { env } from "~/env";
 import { categoriesRouter, getAllCategories } from "./categories";
 import { nanoid } from "nanoid";
-import { api } from "~/trpc/server";
 import { EmployeeRaw, getAllEmployees } from "./employees";
+import { TRPCError } from "@trpc/server";
+import { ERROR_MESSAGES } from "~/lib/errors";
 
 export type AssetRaw = {
   id: string,
@@ -427,6 +428,36 @@ export const assetsRouter = createTRPCRouter({
       const lockersAndBoxes = await lockersAndBoxesResponse.json()
       // console.dir(lockersAndBoxes)
       return lockersAndBoxes
+    }),
+  checkId: publicProcedure
+    .input(z.object({
+      id: z.string()
+    }))
+    .query(async ({ input }) => {
+      const assetResponse = await fetch(`${env.SERVER_URL}/api/Asset/${input.id}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${env.TOKEN_EMPRESA}`,
+          },
+          cache: "no-store"
+        })
+
+      if (assetResponse.status === 404) {
+        return true
+      }
+
+      if (!assetResponse.ok) {
+        const error = await assetResponse.text()
+        console.log(`Ocurrió un problema al intentar pedir un activo (${input.id}) con el siguiente mensaje de error:`, error)
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: ERROR_MESSAGES.GENERIC_INTERNAL_ERROR
+        })
+      }
+
+      return false
+
     }),
   history: publicProcedure
     .query(async () => {
