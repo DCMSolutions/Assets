@@ -180,9 +180,6 @@ export default function CreateAssetForm({
             onChange={setIdCategoria}
             placeholder="Elegir categoría"
           />
-          <AddCategoryDialog onCreate={(newCategory) => {
-            setCategories(prev => [...prev, { value: newCategory.id, label: newCategory.nombre }])
-          }} />
         </div>
 
         <div className="flex items-center gap-2">
