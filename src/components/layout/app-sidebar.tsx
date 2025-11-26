@@ -34,22 +34,22 @@ export function AppSidebar({ lang }: { lang?: string }) {
           name: "Todos los activos",
           href: "/assets",
         },
-        {
-          name: "Asignados",
-          href: "/assets",
-        },
-        {
-          name: "En el locker",
-          href: "/assets",
-        },
-        {
-          name: "En usuarios",
-          href: "/assets",
-        },
-        {
-          name: "En reparación",
-          href: "/assets",
-        },
+        // {
+        //   name: "Asignados",
+        //   href: "/assets",
+        // },
+        // {
+        //   name: "En el locker",
+        //   href: "/assets",
+        // },
+        // {
+        //   name: "En usuarios",
+        //   href: "/assets",
+        // },
+        // {
+        //   name: "En reparación",
+        //   href: "/assets",
+        // },
       ]
     },
     {
@@ -59,22 +59,22 @@ export function AppSidebar({ lang }: { lang?: string }) {
           name: "Todos los usuarios",
           href: "/employees",
         },
-        {
-          name: "Súper Administradores",
-          href: "/employees",
-        },
-        {
-          name: "Administradores",
-          href: "/employees",
-        },
-        {
-          name: "Usuarios",
-          href: "/employees",
-        },
-        {
-          name: "Habilitados",
-          href: "/employees",
-        },
+        // {
+        //   name: "Súper Administradores",
+        //   href: "/employees",
+        // },
+        // {
+        //   name: "Administradores",
+        //   href: "/employees",
+        // },
+        // {
+        //   name: "Usuarios",
+        //   href: "/employees",
+        // },
+        // {
+        //   name: "Habilitados",
+        //   href: "/employees",
+        // },
         {
           name: "Grupos de usuarios",
           href: "/employees/groups",
@@ -84,83 +84,83 @@ export function AppSidebar({ lang }: { lang?: string }) {
     {
       title: "Ajustes",
       links: [
-        {
-          name: "Modelos de activos",
-          href: "/models",
-        },
+        // {
+        //   name: "Modelos de activos",
+        //   href: "/models",
+        // },
         {
           name: "Categorías de activos",
           href: "/categories",
         },
-        {
-          name: "Marcas de activos",
-          href: "/brands",
-        },
-        {
-          name: "Proveedores de activos",
-          href: "/",
-        },
-        {
-          name: "Departamentos",
-          href: "/",
-        },
-        {
-          name: "Empresas",
-          href: "/",
-        },
-        {
-          name: "Locaciones",
-          href: "/",
-        },
+        // {
+        //   name: "Marcas de activos",
+        //   href: "/brands",
+        // },
+        // {
+        //   name: "Proveedores de activos",
+        //   href: "/",
+        // },
+        // {
+        //   name: "Departamentos",
+        //   href: "/",
+        // },
+        // {
+        //   name: "Empresas",
+        //   href: "/",
+        // },
+        // {
+        //   name: "Locaciones",
+        //   href: "/",
+        // },
       ]
     },
-    {
-      title: "Configuración",
-      links: [
-        {
-          name: "Configuración general",
-          href: "/",
-        },
-        {
-          name: "Notificaciones",
-          href: "/",
-        },
-      ]
-    },
-    {
-      title: "Reportes",
-      links: [
-        {
-          name: "Actividad",
-          href: "/",
-        },
-        {
-          name: "Ocupación por día",
-          href: "/",
-        },
-        {
-          name: "Log de accesos",
-          href: "/",
-        },
-        {
-          name: "Activos en reparación",
-          href: "/",
-        },
-      ]
-    },
-    {
-      title: "Permisos",
-      links: [
-        {
-          name: "Permisos",
-          href: "/",
-        },
-        {
-          name: "Roles",
-          href: "/",
-        },
-      ]
-    },
+    // {
+    //   title: "Configuración",
+    //   links: [
+    //     {
+    //       name: "Configuración general",
+    //       href: "/",
+    //     },
+    //     {
+    //       name: "Notificaciones",
+    //       href: "/",
+    //     },
+    //   ]
+    // },
+    // {
+    //   title: "Reportes",
+    //   links: [
+    //     {
+    //       name: "Actividad",
+    //       href: "/",
+    //     },
+    //     {
+    //       name: "Ocupación por día",
+    //       href: "/",
+    //     },
+    //     {
+    //       name: "Log de accesos",
+    //       href: "/",
+    //     },
+    //     {
+    //       name: "Activos en reparación",
+    //       href: "/",
+    //     },
+    //   ]
+    // },
+    // {
+    //   title: "Permisos",
+    //   links: [
+    //     {
+    //       name: "Permisos",
+    //       href: "/",
+    //     },
+    //     {
+    //       name: "Roles",
+    //       href: "/",
+    //     },
+    //   ]
+    // },
     {
       title: "Monitor",
       links: [
@@ -181,7 +181,7 @@ export function AppSidebar({ lang }: { lang?: string }) {
         </div>
         <div className="mt-4">
           <a href="/" >
-            <span className="text-lg bg-[#1E282C]">Panel de Control</span>
+            <span className="text-lg bg-[#1E282C] text-nowrap overflow-hidden">Panel de Control</span>
           </a>
         </div>
       </SidebarHeader>
