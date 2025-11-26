@@ -1,6 +1,6 @@
 "use client";
 
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "~/components/ui/dialog";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "~/components/ui/dialog";
 
 export default function AboutDialog() {
   return (
@@ -11,11 +11,14 @@ export default function AboutDialog() {
 
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Assets</DialogTitle>
+          <img src="/assets.png" />
         </DialogHeader>
-
-        <p>Versión 0.8</p>
-        <p>Fecha: 25 de noviembre de 2025</p>
+        <p className="font-bold text-2xl">Versión 0.8</p>
+        <p className="font-bold text-2xl">Fecha: 25 de noviembre de 2025</p>
+        <div className="flex flex-col">
+          <p className="font-light text-nowrap">Licencia: Evaluación</p>
+          <p className="font-light text-nowrap">Copyright © Locker Inteligentes DCM Solution S.A.</p>
+        </div>
       </DialogContent>
     </Dialog>
   );
