@@ -38,20 +38,13 @@ export default function GroupForm({
 }: GroupFormDrops) {
   const { mutateAsync: editGroup, isLoading: loadingMutation } = api.employees.groups.edit.useMutation();
 
-  // const { data: groupEmployeeList, isLoading: loadingGroupEmployees } =
-  //   api.employees.groups.getEmployees.useQuery({ id: parseInt(group.id) })
-
   const [name, setName] = useState(group?.nombre!);
+  const [description, setDescription] = useState<string | null>(group?.descripcion);
   const [selectedEmployees, setSelectedEmployees] = useState<string[]>(group.empleados)
   const [isAdmin, setIsAdmin] = useState<boolean>(group.esAdministrador)
   const [isService, setIsService] = useState<boolean>(group.esMantenimiento)
 
   const router = useRouter();
-
-  // useEffect(() => {
-  //   if (loadingGroupEmployees) return
-  //   setSelectedEmployees(groupEmployeeList!.map(e => e.id))
-  // }, [loadingGroupEmployees, groupEmployeeList])
 
   async function handleEdit() {
     const toAssign: string[] = []
@@ -95,6 +88,16 @@ export default function GroupForm({
             placeholder="Nombre"
             value={name}
             onChange={(e) => setName(e.target.value)}
+          />
+        </div>
+
+        <div className="flex items-center gap-2 flex-1">
+          <Label htmlFor="description" className="font-bold">Descripción</Label>
+          <Input
+            id="description"
+            placeholder="Descripción"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
           />
         </div>
 

@@ -164,6 +164,7 @@ export const groupsRouter = createTRPCRouter({
     .input(
       z.object({
         nombre: z.string(),
+        descripcion: z.string().nullish(),
         esAdministrador: z.boolean(),
         esMantenimiento: z.boolean(),
         employeesToAssign: z.array(z.string())
@@ -198,6 +199,7 @@ export const groupsRouter = createTRPCRouter({
       z.object({
         id: z.number(),
         nombre: z.string(),
+        descripcion: z.string().nullish(),
         toAssign: z.array(z.string()),
         toUnassign: z.array(z.string()),
         admin: z.boolean(),

@@ -25,17 +25,17 @@ export default function CreateGroupForm({
   const { mutateAsync: createGroup, isLoading: disabled } = api.employees.groups.create.useMutation();
 
   const [name, setName] = useState("");
+  const [description, setDescription] = useState<string>("");
   const [employeesToAssign, setEmployeesToAssign] = useState<string[]>([])
   const [isAdmin, setIsAdmin] = useState<boolean>(false)
   const [isService, setIsService] = useState<boolean>(false)
-
-  const [open, setOpen] = useState(false);
 
   const router = useRouter();
 
   async function handleCreate() {
     function cleanForm() {
       setName("")
+      setDescription("")
       setEmployeesToAssign([])
       setIsAdmin(false)
       setIsService(false)
@@ -43,6 +43,7 @@ export default function CreateGroupForm({
     try {
       await createGroup({
         nombre: name,
+        descripcion: description,
         employeesToAssign,
         esAdministrador: isAdmin,
         esMantenimiento: isService
@@ -66,6 +67,16 @@ export default function CreateGroupForm({
             placeholder="Nombre"
             value={name}
             onChange={(e) => setName(e.target.value)}
+          />
+        </div>
+
+        <div className="flex items-center gap-2 flex-1">
+          <Label htmlFor="description" className="font-bold">Descripción</Label>
+          <Input
+            id="description"
+            placeholder="Descripción"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
           />
         </div>
 
