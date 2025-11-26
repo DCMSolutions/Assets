@@ -1,5 +1,4 @@
 import { Title } from "~/components/title";
-import { AddCategoryDialog } from "./add-category-dialog";
 import { categoriesTableColumns } from "./columns";
 import { api } from "~/trpc/server";
 import { DataTable } from "~/components/generic-table";
@@ -15,7 +14,7 @@ export default async function Categories() {
       <div className="flex pl-4 justify-between">
         <Title>Categorías de activos</Title>
         <Link href={"/categories/create"} >
-          <Button>Dar de alta usuario</Button>
+          <Button>Crear nueva categoría</Button>
         </Link>
       </div>
       <div>

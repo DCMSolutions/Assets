@@ -66,6 +66,7 @@ export default function GroupForm({
       await editGroup({
         id: parseInt(group.id),
         nombre: name,
+        descripcion: description,
         toAssign,
         toUnassign,
         admin: isAdmin,

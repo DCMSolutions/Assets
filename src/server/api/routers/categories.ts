@@ -48,6 +48,7 @@ export const categoriesRouter = createTRPCRouter({
   getAll: publicProcedure
     .query(async () => {
       return await getAllCategories()
+
     }),
   getById: publicProcedure
     .input(z.object({

@@ -20,57 +20,61 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Category } from "~/server/api/routers/categories";
 import { Card } from "~/components/ui/card";
+import { Label } from "~/components/ui/label";
+import CancelButton from "~/components/cancel-button";
+import AcceptButton from "~/components/accept-button";
 
 export default function CategoryForm({ category }: { category: Category }) {
-  const [nombre, setNombre] = useState<string>(category.nombre);
+  const [name, setName] = useState<string>(category.nombre);
 
   const { mutateAsync: editCategory, isLoading } = api.assets.categories.edit.useMutation();
 
   const router = useRouter();
 
   async function handleChange() {
+    const nombre = name.trim()
+    if (nombre === "") {
+      toast.error("El nombre de la categoría no puede estar vacío.")
+      setName(category.nombre)
+      return
+    }
     try {
       await editCategory({
         id: parseInt(category.id),
         nombre
       });
       toast.success("Categoría modificada correctamente.");
-      router.refresh();
+      router.push("/categories");
     } catch {
       toast.error("Ocurrió un error al intentar modificar la categoría.");
     }
   }
 
   return (
-    <>
-      <section className="space-y-2">
-        <div className="flex justify-between">
-          <Title>Modificar categoría</Title>
-          <Button disabled={isLoading} onClick={handleChange}>
-            {isLoading ? (
-              <Loader2 className="mr-2 animate-spin" />
-            ) : (
-              <CheckIcon className="mr-2" />
-            )}
-            Aplicar cambios
-          </Button>
+    <div className="flex justify-center">
+      <Card className="p-16 w-[45rem] flex flex-col gap-4">
+
+        <div className="flex items-center gap-2 flex-1">
+          <Label htmlFor="name" className="font-bold">Nombre*</Label>
+          <Input
+            id="name"
+            placeholder="Nombre"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
         </div>
 
-        <Card className="p-5">
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <Input
-              id="nombre"
-              placeholder="Nombre"
-              value={nombre}
-              onChange={(e) => setNombre(e.target.value)}
-            />
-          </div>
-        </Card>
-        <div className="flex justify-end">
-          <DeleteCategory categoryId={category?.id!} />
+        <div className="flex justify-between">
+          <CancelButton
+            onClick={() => { router.push("/categories") }}>
+            Cancelar
+          </CancelButton>
+          <AcceptButton isLoading={isLoading} onClick={handleChange} >
+            <span>Guardar</span>
+          </AcceptButton>
         </div>
-      </section>
-    </>
+      </Card>
+    </div>
   );
 }
 
