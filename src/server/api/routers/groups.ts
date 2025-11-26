@@ -11,7 +11,7 @@ import { CategoryRaw } from "./categories";
 export type GroupRaw = {
   id: number,
   nombre: string,
-  descripcion: string | null,
+  descripcion: string,
   esMantenimiento: boolean,
   esAdministrador: boolean,
   assetsAsignados: AssetRaw[],
@@ -164,7 +164,7 @@ export const groupsRouter = createTRPCRouter({
     .input(
       z.object({
         nombre: z.string(),
-        descripcion: z.string().nullish(),
+        descripcion: z.string(),
         esAdministrador: z.boolean(),
         esMantenimiento: z.boolean(),
         employeesToAssign: z.array(z.string())
@@ -199,7 +199,7 @@ export const groupsRouter = createTRPCRouter({
       z.object({
         id: z.number(),
         nombre: z.string(),
-        descripcion: z.string().nullish(),
+        descripcion: z.string(),
         toAssign: z.array(z.string()),
         toUnassign: z.array(z.string()),
         admin: z.boolean(),

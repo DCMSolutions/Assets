@@ -38,8 +38,8 @@ export default function GroupForm({
 }: GroupFormDrops) {
   const { mutateAsync: editGroup, isLoading: loadingMutation } = api.employees.groups.edit.useMutation();
 
-  const [name, setName] = useState(group?.nombre!);
-  const [description, setDescription] = useState<string | null>(group?.descripcion);
+  const [name, setName] = useState(group.nombre);
+  const [description, setDescription] = useState<string>(group.descripcion);
   const [selectedEmployees, setSelectedEmployees] = useState<string[]>(group.empleados)
   const [isAdmin, setIsAdmin] = useState<boolean>(group.esAdministrador)
   const [isService, setIsService] = useState<boolean>(group.esMantenimiento)
