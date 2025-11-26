@@ -181,7 +181,9 @@ export function AppSidebar({ lang }: { lang?: string }) {
         </div>
         <div className="mt-4">
           <a href="/" >
-            <span className="text-lg bg-[#1E282C] text-nowrap overflow-hidden">Panel de Control</span>
+            <div className="truncate">
+              <span className="text-lg bg-[#1E282C]">Panel de Control</span>
+            </div>
           </a>
         </div>
       </SidebarHeader>

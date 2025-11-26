@@ -29,10 +29,10 @@ export default function TopBar() {
       </a>
 
       <div className="flex space-x-4">
-        <a href="/employees" className="flex items-center">
+        <a title="Ir a usuarios" href="/employees" className="flex items-center">
           <Users />
         </a>
-        <a href="/assets" className="flex items-center">
+        <a title="Ir a activos" href="/assets" className="flex items-center">
           <Barcode />
         </a>
         <div>

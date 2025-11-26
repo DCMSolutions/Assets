@@ -140,7 +140,7 @@ export default function CreateAssetForm({
             disabled={tagDisabled}
             onChange={(e) => setId(e.target.value)}
           />
-          <Button onClick={() => {
+          <Button title="Generar nuevo TAG" onClick={() => {
             const tag = nanoid(10)
             setId(tag)
           }}>
@@ -183,17 +183,17 @@ export default function CreateAssetForm({
         </div>
 
         <div className="flex items-center gap-2">
-          <Label className="font-bold">Asignar a empleado</Label>
+          <Label className="font-bold">Asignar a usuario</Label>
           <Selector
             options={employeeOptions}
             value={idEmpleadoAsignado}
             onChange={setIdEmpleadoAsignado}
-            placeholder="Elegir empleado"
+            placeholder="Elegir usuario"
           />
         </div>
 
         <div className="flex items-center gap-2">
-          <Label className="font-bold">Asignar a grupos de empleados</Label>
+          <Label className="font-bold">Asignar a grupos de usuarios</Label>
           <MultiSelect
             options={groupOptions}
             placeholder={"Asignar a grupos"}
