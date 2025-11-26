@@ -25,6 +25,14 @@ export const assetsTableColumns: ColumnDef<AssetForTable>[] = [
     ),
   },
   {
+    accessorKey: "numeroDeSerie",
+    header: "N.º de serie",
+    sortingFn: "basic",
+    cell: ({ row }) => (
+      <div className="text-center">{row.getValue("numeroDeSerie") || "-"}</div>
+    ),
+  },
+  {
     accessorKey: "modelo",
     header: "Modelo",
     cell: ({ row }) => (
