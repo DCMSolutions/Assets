@@ -225,12 +225,12 @@ export const employeesRouter = createTRPCRouter({
           message: ERROR_MESSAGES.GENERIC_INTERNAL_ERROR
         })
       }
-      toAssign.forEach(group => {
-        assignEmployeesToGroup({ employees: [employee.id], groupId: group, assign: true })
-      })
-      toUnassign.forEach(group => {
-        assignEmployeesToGroup({ employees: [employee.id], groupId: group, assign: false })
-      })
+      for (const group of toAssign) {
+        await assignEmployeesToGroup({ employees: [employee.id], groupId: group, assign: true })
+      }
+      for (const group of toUnassign) {
+        await assignEmployeesToGroup({ employees: [employee.id], groupId: group, assign: false })
+      }
     }),
   delete: publicProcedure
     .input(

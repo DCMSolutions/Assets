@@ -136,7 +136,8 @@ export const groupsRouter = createTRPCRouter({
           method: "GET",
           headers: {
             Authorization: `Bearer ${env.TOKEN_EMPRESA}`,
-          }
+          },
+          cache: "no-store"
         })
 
       if (!groupResponse.ok) {
