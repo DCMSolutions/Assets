@@ -13,8 +13,8 @@ export default function AboutDialog() {
         <DialogHeader>
           <img src="/assets.png" />
         </DialogHeader>
-        <p className="font-bold text-2xl">Versión 0.8.2</p>
-        <p className="font-bold text-2xl">Fecha: 26 de noviembre de 2025</p>
+        <p className="font-bold text-2xl">Versión 0.8.3</p>
+        <p className="font-bold text-2xl">Fecha: 27 de noviembre de 2025</p>
         <div className="flex flex-col">
           <p className="font-light text-nowrap">Licencia: Evaluación</p>
           <p className="font-light text-nowrap">Copyright © Locker Inteligentes DCM Solution S.A.</p>
