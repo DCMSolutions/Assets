@@ -44,6 +44,8 @@ export default function CreateEmployeeForm({
       setMail("")
       setPhone("")
       setSelectedGroups([])
+      setLegajo("")
+      setTitulo("")
     }
     const cleanId = id.trim().split(" ").join("")
     if (cleanId.length < 3) {
@@ -179,11 +181,6 @@ export default function CreateEmployeeForm({
             value={titulo}
             onChange={(e) => setTitulo(e.target.value)}
           />
-        </div>
-
-        <div className="flex items-center gap-2">
-          <Label htmlFor="dept">Departamento</Label>
-          <Input disabled={true} />
         </div>
 
         <div className="flex justify-between">

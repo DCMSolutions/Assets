@@ -43,7 +43,6 @@ export default function CreateAssetForm({
   const [serial, setSerial] = useState<string>("");
   const [modelo, setModelo] = useState<string>("");
   const [idCategoria, setIdCategoria] = useState<string>("");
-  const [categories, setCategories] = useState<CategoryOption[]>(categoryOptions);
   const [idEmpleadoAsignado, setIdEmpleadoAsignado] = useState<string>("");
   const [selectedGroups, setSelectedGroups] = useState<string[]>([])
   const [idBoxAsignado, setIdBoxAsignado] = useState<string>("");
@@ -77,6 +76,17 @@ export default function CreateAssetForm({
   }, [])
 
   async function handleCreate() {
+    if (id === "") {
+      toast.error("El TAG no puede ser vacío.")
+      return
+    }
+    if (serial === "") {
+      toast.error("El número de serie no puede ser vacío.")
+      return
+    }
+    if (idCategoria === "" || idCategoria === " ") {
+      toast.error("Debe elegirse una categoría para el activo.")
+    }
     const { data: isValid } = await idIsUnique()
     if (!isValid) {
       toast.error("Este TAG ya existe, por favor introduzca uno diferente y único o genere uno aleatorio.")
@@ -122,9 +132,8 @@ export default function CreateAssetForm({
 
       toast.success("Activo agregado correctamente");
       cleanForm()
-    } catch (e) {
-      const error = asTRPCError(e)!;
-      toast.error(error.message);
+    } catch {
+      toast.error("Ocurrió un error intentando crear un activo");
     }
   }
 
@@ -154,7 +163,7 @@ export default function CreateAssetForm({
         </div>
 
         <div className="flex items-center gap-2">
-          <Label htmlFor="serial" className="font-bold">Número de serie</Label>
+          <Label htmlFor="serial" className="font-bold">Número de serie*</Label>
           <Input
             id="serial"
             value={serial}
@@ -175,10 +184,11 @@ export default function CreateAssetForm({
         <div className="flex items-center gap-2 flex-1">
           <Label className="font-bold">Categoría*</Label>
           <Selector
-            options={categories}
+            options={categoryOptions}
             value={idCategoria}
             onChange={setIdCategoria}
             placeholder="Elegir categoría"
+            required
           />
         </div>
 

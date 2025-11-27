@@ -18,6 +18,7 @@ import { EmployeeOption } from "~/server/api/routers/employees";
 import { GroupOption } from "~/server/api/routers/groups";
 import { api } from "~/trpc/react";
 import { Checkbox } from "~/components/ui/checkbox";
+import CancelButton from "~/components/cancel-button";
 
 interface AssetFormProps {
   assetWEG: AssetWithEmployeesAndGroups,
@@ -82,6 +83,17 @@ export default function AssetForm({
   }, [])
 
   async function handleEdit() {
+    if (id === "") {
+      toast.error("El TAG no puede ser vacío.")
+      return
+    }
+    if (serial === "") {
+      toast.error("El número de serie no puede ser vacío.")
+      return
+    }
+    if (idCategoria === "") {
+      toast.error("Debe elegirse una categoría para el activo.")
+    }
     const toAssign: string[] = []
     const toUnassign: string[] = []
     selectedGroups!.forEach(selectedG => {
@@ -148,7 +160,7 @@ export default function AssetForm({
         </div>
 
         <div className="flex items-center gap-2">
-          <Label htmlFor="serial" className="font-bold">Número de serie</Label>
+          <Label htmlFor="serial" className="font-bold">Número de serie*</Label>
           <Input
             id="serial"
             value={serial}
@@ -250,7 +262,11 @@ export default function AssetForm({
           />
         </div>
 
-        <div className="flex justify-end">
+        <div className="flex justify-between">
+          <CancelButton
+            onClick={() => { router.push("/assets") }}>
+            Cancelar
+          </CancelButton>
           <AcceptButton isLoading={loadingEdition || loadingAssignment || loadingUnassignment} onClick={handleEdit}>
             <span>Guardar</span>
           </AcceptButton>
