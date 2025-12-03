@@ -6,6 +6,7 @@ import { nanoid } from "nanoid";
 import { EmployeeRaw, getAllEmployees } from "./employees";
 import { TRPCError } from "@trpc/server";
 import { ERROR_MESSAGES } from "~/lib/errors";
+import { GroupRaw } from "./groups";
 
 export type AssetRaw = {
   id: string,
@@ -20,13 +21,14 @@ export type AssetRaw = {
   idBoxAsignado: number | undefined,
   nroSerieLocker: string | undefined,
   estado: number,
-  habilitado: boolean
+  habilitado: boolean,
 }
 
 export type AssetWithEmployeesAndGroupsRaw = {
   asset: AssetRaw,
   empleados: string[],
-  grupos: number[]
+  grupos: number[],
+  asignadoA: string | undefined
 }
 
 export type AssetWithEmployeesAndGroups = {
@@ -44,7 +46,7 @@ export type Asset = Omit<AssetRaw, "idCategoria" | "idBoxAsignado" | "estado"> &
 export type AssetForTable = Omit<AssetRaw, "poseedorActual" | "estado"> & {
   nombrePoseedorActual: string | undefined,
   idPoseedorActual: string | undefined,
-  nombreEmpleadoAsignado: string | undefined,
+  asignadoA: string | undefined,
   categoria: string,
   estado: AssetState
 }
@@ -99,6 +101,26 @@ async function getAssets() {
     console.log("Ocurrió un problema al pedir todos los activos con el siguiente mensaje de error:", error)
   }
   const assets: AssetRaw[] = await assetsResponse.json()
+  // console.log("Todos los activos actuales:", assets)
+  return assets
+
+}
+
+async function getAssetsWEG() {
+  const assetsResponse = await fetch(`${env.SERVER_URL}/api/Asset/conEmpleados`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${env.TOKEN_EMPRESA}`,
+      },
+      cache: "no-store"
+    })
+
+  if (!assetsResponse.ok) {
+    const error = await assetsResponse.text()
+    console.log("Ocurrió un problema al pedir todos los activos y sus asignaciones con el siguiente mensaje de error:", error)
+  }
+  const assets: (AssetWithEmployeesAndGroupsRaw & { asignadoA: string | null })[] = await assetsResponse.json()
   // console.log("Todos los activos actuales:", assets)
   return assets
 
@@ -161,9 +183,17 @@ export const assetsRouter = createTRPCRouter({
   getAllForTable: publicProcedure
     .query(async () => {
 
-      const assets = await getAssets()
+      const assetsWEG = await getAssetsWEG()
       const categories = await getAllCategories()
       const employees = await getAllEmployees()
+
+      const assets = assetsWEG.map((aweg) => {
+        const { asset, asignadoA } = aweg
+        return {
+          ...asset,
+          asignadoA: asignadoA
+        }
+      })
 
       const assetsExtended: AssetForTable[] = assets.map((asset) => {
         const { poseedorActual, idCategoria, idEmpleadoAsignado, estado, ...rest } = asset

@@ -47,10 +47,12 @@ export const assetsTableColumns: ColumnDef<AssetForTable>[] = [
     ),
   },
   {
-    accessorKey: "nombreEmpleadoAsignado",
-    header: "Empleado Asignado",
+    accessorKey: "asignadoA",
+    header: "Asignado a",
     cell: ({ row }) => (
-      <div className="text-center">{row.getValue("nombreEmpleadoAsignado") || "-"}</div>
+      <div className="text-center">
+        {row.getValue("asignadoA") || "-"}
+      </div>
     ),
   },
   {
